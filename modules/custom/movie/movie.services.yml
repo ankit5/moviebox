@@ -1,0 +1,5 @@
+services:
+  movie.customTwigExtension:
+    class: Drupal\movie\CustomTwigExtension
+    tags:
+      - { name: twig.extension }
