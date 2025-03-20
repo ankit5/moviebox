@@ -49,7 +49,7 @@ class YearFilter extends FilterPluginBase {
    // $table = array_key_first($query->tables);
 
     if (!empty($this->value[0])) {
-      $value = $this->value[0];
+      $value = $this->value[0]-1;
       $query->addField('node__field_releasedate', 'field_releasedate_value', 'field_releasedate_value');
  //$query->setWhereGroup('AND', 1);
  //$query->addWhere(1, "node__field_releasedate.field_releasedate_value", '106', "!=");
