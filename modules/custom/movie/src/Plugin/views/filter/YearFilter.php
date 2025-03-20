@@ -56,7 +56,7 @@ class YearFilter extends FilterPluginBase {
  //EXTRACT(year FROM creation_date)
  //$query->addWhere(0, "EXTRACT(year FROM node__field_releasedate.field_releasedate_value)", $this->value[0]);
    //   $query->addWhere(1, "EXTRACT(YEAR FROM FROM_UNIXTIME(node__field_releasedate.field_releasedate_value)) = :year", [':year' => $this->value[0]]);
-   $this->query->addWhereExpression(0, "YEAR(FROM_UNIXTIME(node__field_releasedate.field_releasedate_value)) = $value"); 
+   $this->query->addWhereExpression(1, "YEAR(FROM_UNIXTIME(node__field_releasedate.field_releasedate_value)) = $value"); 
   }
     
   }
