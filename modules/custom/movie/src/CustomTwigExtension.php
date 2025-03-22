@@ -245,6 +245,9 @@ return $url;
     print_r($json);
     exit();*/
    // return $json;
+   if($array == '' && $key=='') {
+    return $json;
+  }
     if ($array != '') {
       return $json[$key][$array];
     }
