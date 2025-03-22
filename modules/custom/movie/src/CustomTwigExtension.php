@@ -237,7 +237,7 @@ return $url;
     "type": "dtshcode"';*/
    $json = html_entity_decode(($json));
 //return $json;
-
+   $json = str_replace("&quot;",'"',$json);
     
     $json = json_decode($json,TRUE);
    // return $json['embed_url'];
