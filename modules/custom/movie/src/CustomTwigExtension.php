@@ -236,7 +236,7 @@ return $url;
   /* $json = '"embed_url": "<iframe src=https://cdnplay.pro/watch?v=1QFC7EIS frameborder=0 scrolling=no webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>",
     "type": "dtshcode"';*/
    $json = html_entity_decode(($json));
-return $json;
+//return $json;
 
     
     $json = json_decode($json,TRUE);
