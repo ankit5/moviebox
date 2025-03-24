@@ -1,0 +1,14 @@
+name: Views REST Field Format
+type: module
+description: Provides a views row plugin to better define REST export data format by field.
+core_version_requirement: ^10.3 || ^11
+package: Views
+dependencies:
+  - drupal:views
+  - drupal:rest
+  - drupal:serialization
+
+# Information added by Drupal.org packaging script on 2025-01-07
+version: '1.0.2'
+project: 'views_rest_field_format'
+datestamp: 1736257223

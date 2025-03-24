@@ -1,0 +1,14 @@
+{
+    "name": "drupal/views_rest_field_format",
+    "type": "drupal-module",
+    "description": "Provides a views row plugin to better define REST export data format by field.",
+    "keywords": [
+        "Drupal"
+    ],
+    "require": {
+      "php": ">=8.1",
+      "drupal/core": "^10.3 || ^11"
+    }
+}
+
+
