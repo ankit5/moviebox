@@ -28,7 +28,7 @@ class PrettyFormatter extends FormatterBase {
     foreach ($items as $delta => $item) {
       $elements[$delta] = [
         '#type' => 'json_pretty',
-        '#json' => json_decode($item->value),
+        '#json' => $item->value,
       ];
     }
     return $elements;

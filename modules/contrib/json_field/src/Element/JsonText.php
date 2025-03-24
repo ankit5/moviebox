@@ -5,6 +5,7 @@ namespace Drupal\json_field\Element;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Render\Element\RenderElement;
 use Drupal\json_field\JsonMarkup;
+use Drupal\Core\Render\Markup;
 
 /**
  * Provides a JSON text render element.
@@ -33,7 +34,7 @@ class JsonText extends RenderElement {
   public static function preRenderText($element) {
     // Create the render array.
     $markup_element = [
-      '#markup' => new FormattableMarkup('<pre class="json-field"><code>@json</code></pre>', ['@json' => JsonMarkup::create($element['#text'])]),
+      '#markup' => $element['#text'],
     ];
 
     return $markup_element;

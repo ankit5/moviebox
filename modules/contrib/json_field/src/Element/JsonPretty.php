@@ -28,9 +28,9 @@ class JsonPretty extends RenderElement {
   public static function preRenderJsonPretty(array $element): array {
     return [
       '#markup' => new FormattableMarkup(
-        '<div class="json-field-pretty">' . static::formatJson($element['#json']) . '</div>', [],
+        static::formatJson($element['#json']), [],
       ),
-      '#attached' => ['library' => ['json_field/json_field.pretty']],
+    //  '#attached' => ['library' => ['json_field/json_field.pretty']],
     ];
   }
 
