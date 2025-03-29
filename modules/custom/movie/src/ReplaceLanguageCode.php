@@ -484,9 +484,17 @@ curl_setopt($curl, CURLOPT_URL, $url);
 // curl_setopt($curl, CURLOPT_POST, 1);
 //   curl_setopt($curl, CURLOPT_POSTFIELDS, "subjectId=".$subjectid."");
   
-curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+//curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+  'Referer: https://h5.inmoviebox.com/',
+  'Origin: https://h5.inmoviebox.com/',
+  'Accept: */*',
+  'Host: h5.inmoviebox.com',
+  'Connection: keep-alive',
+  'X-Forwarded-For: http://localhost'
+));
 $str = curl_exec($curl);
 curl_close($curl);
 //var_export($str);
