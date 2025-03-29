@@ -213,9 +213,15 @@ LIMIT 1 OFFSET 0")->fetchObject();
    */
   public function node_load($nid) {
 
-     $node = \Drupal\node\Entity\Node::load($myLastElement['target_id']);
+    $context ='';
+  //$nid = $variables['node']->id();
+  $nid = (int)"$nid";
+  //return $nid;
+   $node2 = \Drupal\movie\ReplaceLanguageCode::replaceLangcode($nid,$context);
 
-    return $node;
+   //  $node = \Drupal\node\Entity\Node::load($myLastElement['target_id']);
+  
+    return $node2;
   }
 
 public function parse_url_remove($url){

@@ -103,7 +103,7 @@ public static function replaceLangcode3($nid, &$context){
   public static function replaceLangcode($nid, &$context){
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $message = 'Replacing langcode(und to de)...';
-    $load ='';
+    $load ='1';
     if($node->field_season->value=='')
     {
       $load =1;
@@ -114,9 +114,9 @@ public static function replaceLangcode3($nid, &$context){
 //  exit;
    $message2 = getmoviebox_detail($node->field_detailpath->value,$node->field_subjectid->value);
  
-/*print_r($message2['field_trailer']);
+// print_r($message2);
  
-   exit;*/
+//    exit;
   
     $results = array();
 
@@ -125,6 +125,10 @@ public static function replaceLangcode3($nid, &$context){
    if ($message2['field_season']) {
     $node->field_season->value = $message2['field_season'];
     }
+
+    if ($message2['field_description']) {
+      $node->field_description->value = $message2['field_description'];
+      }
     
    
     $results[] = $node->save();
@@ -467,44 +471,58 @@ function getmoviebox_detail($detailpath='',$subjectid='')
   // $url = str_replace($oldStr, $new_var, $url );
   $curl = curl_init();
   $url = 'https://h5.inmoviebox.com/movies/'.$detailpath.'?id='.$subjectid;
+ // $url = 'https://h5.inmoviebox.com/wefeed-h5-bff/web/subject';
  // $url = 'https://h5.inmoviebox.com/movies/raised-by-wolves-eXCpRFL0GQ6?id=5748897688012083992';
-curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+
+ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($curl, CURLOPT_HEADER, false);
 //curl_setopt($curl, CURLOPT_HTTPPROXYTUNNEL, 0);
 //curl_setopt($curl, CURLOPT_PROXY, '13.91.243.29:3128');
 curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($curl, CURLOPT_URL, $url);
+// curl_setopt($curl, CURLOPT_POST, 1);
+//   curl_setopt($curl, CURLOPT_POSTFIELDS, "subjectId=".$subjectid."");
+  
 curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
 $str = curl_exec($curl);
 curl_close($curl);
-// var_export($str);
-// exit;
-$str = substr($str, strpos($str, '"se":') + 5);
-$str = substr($str, 0, strpos($str, ',['));
+//var_export($str);
 
-$str = explode("},",$str);
 // var_export($str);
 //  exit;
- $str_new = [];
-foreach($str as $key=> $value){
-  if($key>0){
-    $value2 = $value;
-   // print_r($value2);
-    $str_new[$key] = strstr($value2, ',{"', true);
-    if(!$str_new[$key]){
-      $str_new[$key] = substr($value2, 0, strpos($value2, ',"'));
-    }
- // $str_new[] = substr($value2, 0, strpos($value2, ',"'));
- $value2 = '';
-  }
+$dom = HtmlDomParser::str_get_html($str);
+$str_new = $dom->findOne("#__NUXT_DATA__")->text();
+// print $str_new;
+// exit;
+$str_new = json_decode($str_new);
+ 
+ $season_id = '';
+foreach($str_new as $value){
+ if($value->seasons) $season_id = $value->seasons;
 }
-$str_new = json_encode($str_new);
-// var_export($str_new);
+if($season_id==''){
+  return true;
+}
+
+//print_r($str_new[22]);
+$season = [];
+foreach($str_new[$season_id] as $key=>$value){
+ // print_r($str_new[$value]->se);
+  $season[$key]['se']=$str_new[$str_new[$value]->se];
+  $season[$key]['ep']=($str_new[$value]->allEp==7)?$str_new[$str_new[$value]->maxEp]:$str_new[$str_new[$value]->allEp];
+}
+$season = json_encode($season);
+// print "<pre>";
+//  print_r($str_new);
+// print "<pre>";
+//  print_r($season);
 //   exit;
  
-  $movie['field_season'] = $str_new;
+  $movie['field_season'] = $season;
+  $movie['field_description'] = $str_new[13];
 
 
     return $movie;
