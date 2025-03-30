@@ -103,7 +103,7 @@ public static function replaceLangcode3($nid, &$context){
   public static function replaceLangcode($nid, &$context){
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $message = 'Replacing langcode(und to de)...';
-    $load ='1';
+    $load ='';
     if($node->field_season->value=='')
     {
       $load =1;

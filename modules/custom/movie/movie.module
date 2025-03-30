@@ -50,6 +50,16 @@ if($page > 10){
  
 }
 
+ if ($view->id() == "detail_movie"){
+ 
+ $link_array = explode('/',$_SERVER["REQUEST_URI"]);
+     $nid = end($link_array);
+   $context ='';
+  
+   $node2 = \Drupal\movie\ReplaceLanguageCode::replaceLangcode($nid,$context);
+ 
+}
+
 
 
 }
