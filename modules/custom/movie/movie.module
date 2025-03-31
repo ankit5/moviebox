@@ -55,8 +55,9 @@ if($page > 10){
  $link_array = explode('/',$_SERVER["REQUEST_URI"]);
      $nid = end($link_array);
    $context ='';
-  
+  if(intval($nid)){
    $node2 = \Drupal\movie\ReplaceLanguageCode::replaceLangcode($nid,$context);
+  }
  
 }
 
