@@ -387,7 +387,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
   curl_close($curl);
   //print $str;
   //exit;
-  var_dump(json_decode($str, true)); exit;
+  //var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
