@@ -296,7 +296,7 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page=1&channelId=1');
+  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&channelId='.$channel_id);
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
@@ -320,8 +320,8 @@ function curlgetmoviebox($i,$channel_id){
   curl_close($curl);
   // print $str;
   // exit;
-  print "<pre>";
-  print_r(json_decode($str, true)); exit;
+  // print "<pre>";
+  // print_r(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
