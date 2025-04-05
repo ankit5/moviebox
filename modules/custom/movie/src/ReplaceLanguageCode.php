@@ -296,7 +296,7 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&channelId='.$channel_id);
+  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=24&channelId='.$channel_id);
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
@@ -367,27 +367,27 @@ function curlgetmoviebox_platform($i,$platform,$month){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
+  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=12&platform='.$platform.'&month='.$month);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
+  //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
-  //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+  // curl_setopt($curl, CURLOPT_POST, 1);
+  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
+  // //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/',
-    'Origin: https://h5.inmoviebox.com/',
+    'Referer: https://prmovies.world/',
+    'Origin: https://prmovies.world/',
     'Accept: */*',
-    'Host: h5.inmoviebox.com',
-    'Connection: keep-alive',
-    'X-Forwarded-For: http://localhost'
+    'Host: prmovies.world',
+    'Connection: keep-alive'
   ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
   //exit;
-  //var_dump(json_decode($str, true)); exit;
+  var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
@@ -412,14 +412,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
       $node->field_month->value = $month;
       $node->field_description->value = $post['description'];
        $results[] = $node->save();
-    }elseif($nid && $block_id){
-     
-//$alt_title = Drupal\block\Entity\Block::load('1')->field_tanking_list_id->value;
-
-       block_save($nid,$block_id);
-       
-
-    }elseif($result<1){
+    }else if($result<1){
     
     
     /////tags
