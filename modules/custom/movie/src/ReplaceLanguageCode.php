@@ -296,14 +296,14 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/index.php');
+  curl_setopt($curl, CURLOPT_URL, 'https://watch23.shop/test.php?page=1&channelId=1');
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id);
-  //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id."&perPage=24&sort=Latest");
+  // curl_setopt($curl, CURLOPT_POST, 1);
+  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id);
+  // //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id."&perPage=24&sort=Latest");
   
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=24&platform=Netflix");
   //curl_setopt($curl, CURLOPT_REFERER, 'https://watch23.shop/');
@@ -314,13 +314,12 @@ function curlgetmoviebox($i,$channel_id){
     'Origin: https://watch23.shop/',
     'Accept: */*',
     'Host: watch23.shop',
-    'Connection: keep-alive',
-    'X-Forwarded-For: http://localhost'
+    'Connection: keep-alive'
   ));
   $str = curl_exec($curl);
   curl_close($curl);
-  //print $str;
-  //exit;
+  // print $str;
+  // exit;
   print "<pre>";
   print_r(json_decode($str, true)); exit;
   
