@@ -302,13 +302,18 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_POST, 1);
   curl_setopt($curl, CURLOPT_POSTFIELDS, "page=1&perPage=24&channelId=1&country=India&sort=Latest");
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=24&platform=Netflix");
-  curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+  //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
-  // curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-  //   'Referer: https://h5.inmoviebox.com/web/filter?tab=movie',
-  //   'Origin: https://h5.inmoviebox.com'
-  // ));
+  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36");
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://h5.inmoviebox.com/web/filter?tab=movie',
+    'Origin: https://h5.inmoviebox.com',
+    'Accept: application/json',
+    'Host: h5.inmoviebox.com',
+    'Connection: keep-alive',
+    'x-client-info: {"timezone":"Asia/Calcutta"}'
+    // 'X-Forwarded-For: http://localhost'
+  ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
