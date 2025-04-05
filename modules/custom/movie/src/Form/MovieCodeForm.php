@@ -33,6 +33,7 @@ class MovieCodeForm extends FormBase {
       '#title' => $this->t('Page Number'),
       '#maxlength' => 20,
       '#default_value' =>  '1',
+      '#description' =>'(pageno = 1 : 1*24)Movie load , if platform field fill (pageno = 1 : 1*12) Movie load'
     ];
 
     $form['pageno_offset'] = [
@@ -41,33 +42,41 @@ class MovieCodeForm extends FormBase {
       '#maxlength' => 20,
       '#default_value' =>  '0',
     ];
+    $form['channel_id'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Movie type'),
+      '#maxlength' => 20,
+      '#default_value' =>  '1',
+    ];
 
     $form['platform'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Plat form'),
       '#maxlength' => 20,
       '#default_value' =>  '',
+      '#attributes' => array('placeholder' => t('Netflix'),)
     ];
 
     $form['month'] = [
       '#type' => 'textfield',
       '#title' => $this->t('month'),
       '#maxlength' => 20,
-      '#default_value' =>  '202502',
+      '#default_value' =>  '',
+      '#attributes' => array('placeholder' => t('202502'),)
     ];
 
-    $form['rankingid'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('rankingid'),
-      '#maxlength' => 20,
-      '#default_value' =>  '',
-    ];
-    $form['blockid'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Block Id'),
-      '#maxlength' => 20,
-      '#default_value' =>  '',
-    ];
+    // $form['rankingid'] = [
+    //   '#type' => 'textfield',
+    //   '#title' => $this->t('rankingid'),
+    //   '#maxlength' => 20,
+    //   '#default_value' =>  '',
+    // ];
+    // $form['blockid'] = [
+    //   '#type' => 'textfield',
+    //   '#title' => $this->t('Block Id'),
+    //   '#maxlength' => 20,
+    //   '#default_value' =>  '',
+    // ];
 
     $form['actions']['submit1'] = [
       '#type' => 'submit',
@@ -76,39 +85,39 @@ class MovieCodeForm extends FormBase {
       '#submit' => array([$this, 'submitFormOne'])
     ];
 
-    $form['actions']['submit_ranking'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Ranking List Load'),
-      "#weight" => 1,
-      '#submit' => array([$this, 'submitFormRanking'])
-    ];
+    // $form['actions']['submit_ranking'] = [
+    //   '#type' => 'submit',
+    //   '#value' => $this->t('Ranking List Load'),
+    //   "#weight" => 1,
+    //   '#submit' => array([$this, 'submitFormRanking'])
+    // ];
 
-    $form['actions']['submit2'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Load Tv Movies List'),
-      "#weight" => 2,
-      '#button_type' => 'primary',
-      '#submit' => array([$this, 'submitFormTwo'])
-    ];
-    $form['movieno'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Load Movie Numbers'),
-      '#maxlength' => 20,
-      '#default_value' =>  '',
-    ];
-    $form['actions']['submit3'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Save Movies Image'),
-      "#weight" => 2,
-      '#button_type' => 'primary',
-      '#submit' => array([$this, 'submitFormThree'])
-    ];
-    $form['imageno'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Save Movie Numbers'),
-      '#maxlength' => 20,
-      '#default_value' =>  '',
-    ];
+    // $form['actions']['submit2'] = [
+    //   '#type' => 'submit',
+    //   '#value' => $this->t('Load Tv Movies List'),
+    //   "#weight" => 2,
+    //   '#button_type' => 'primary',
+    //   '#submit' => array([$this, 'submitFormTwo'])
+    // ];
+    // $form['movieno'] = [
+    //   '#type' => 'textfield',
+    //   '#title' => $this->t('Load Movie Numbers'),
+    //   '#maxlength' => 20,
+    //   '#default_value' =>  '',
+    // ];
+    // $form['actions']['submit3'] = [
+    //   '#type' => 'submit',
+    //   '#value' => $this->t('Save Movies Image'),
+    //   "#weight" => 2,
+    //   '#button_type' => 'primary',
+    //   '#submit' => array([$this, 'submitFormThree'])
+    // ];
+    // $form['imageno'] = [
+    //   '#type' => 'textfield',
+    //   '#title' => $this->t('Save Movie Numbers'),
+    //   '#maxlength' => 20,
+    //   '#default_value' =>  '',
+    // ];
     
 
     return $form;
@@ -154,20 +163,22 @@ class MovieCodeForm extends FormBase {
    */
   public function submitFormOne(array &$form, FormStateInterface $form_state) {
    // print_r('1');
+  
     $batch = [
       'title' => t('Replacing Language Code...'),
       'operations' => [],
       'finished' => '\Drupal\movie\ReplaceLanguageCode::replaceLangcodeFinishedCallback',
     ];
     $field = $form_state->getValues();
- 
+    // print $field['channel_id'];
+    // exit;
     $i = ($field['pageno_offset']>0)?$field['pageno_offset']+1:1;
     $total = $field['pageno'];
     // print $i."=".$total;
     // exit;
    
  while ($i <= $total) {
-  $params = [$i, $field['platform'], $field['month']];
+  $params = [$i, $field['platform'], $field['month'],'','', $field['channel_id']];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;

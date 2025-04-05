@@ -259,9 +259,10 @@ curl_close($curl);
 
 }
 
- public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id, &$context)
+ public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id, &$context)
 {
- 
+//   var_export($channel_id);
+//  exit;
   //https://h5.inmoviebox.com/wefeed-h5-bff/web/subject/play?subjectId=7415754612038583632&se=1&ep=1
  $message = 'Replacing langcode(und to de)...';
     $results = array();
@@ -280,7 +281,7 @@ curl_close($curl);
         //   exit;
         save_movie_box($items,'','',$block_id);
            }else{
-    $data = curlgetmoviebox($i);
+    $data = curlgetmoviebox($i,$channel_id);
     $items = $data['data']['items'];
     // var_export($data['data']);
     //   exit;
@@ -289,7 +290,7 @@ curl_close($curl);
 }
 }
 
-function curlgetmoviebox($i){
+function curlgetmoviebox($i,$channel_id){
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
@@ -299,16 +300,20 @@ function curlgetmoviebox($i){
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
   curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "channelId=1&page=".$i."&perPage=24&sort=Latest&country=Saudi Arabia");
+  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=1&perPage=24&channelId=1&country=India&sort=Latest");
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=24&platform=Netflix");
-  curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+  //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://h5.inmoviebox.com/',
+  ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
   //exit;
-  //var_dump(json_decode($str, true)); exit;
+  print "<pre>";
+  print_r(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
@@ -326,9 +331,17 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   
   curl_setopt($curl, CURLOPT_POST, 1);
   curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=0&id=".$ranking_id);
-  curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+  //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://h5.inmoviebox.com/',
+    'Origin: https://h5.inmoviebox.com/',
+    'Accept: */*',
+    'Host: h5.inmoviebox.com',
+    'Connection: keep-alive',
+    'X-Forwarded-For: http://localhost'
+  ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
@@ -351,9 +364,17 @@ function curlgetmoviebox_platform($i,$platform,$month){
   
   curl_setopt($curl, CURLOPT_POST, 1);
   curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
-  curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
+  //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://h5.inmoviebox.com/',
+    'Origin: https://h5.inmoviebox.com/',
+    'Accept: */*',
+    'Host: h5.inmoviebox.com',
+    'Connection: keep-alive',
+    'X-Forwarded-For: http://localhost'
+  ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
