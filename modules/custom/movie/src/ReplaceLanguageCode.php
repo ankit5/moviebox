@@ -296,7 +296,7 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://watch23.shop/test.php?page=1&channelId=1');
+  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page=1&channelId=1');
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
@@ -310,10 +310,10 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://watch23.shop/',
-    'Origin: https://watch23.shop/',
+    'Referer: https://prmovies.world/',
+    'Origin: https://prmovies.world/',
     'Accept: */*',
-    'Host: watch23.shop',
+    'Host: prmovies.world',
     'Connection: keep-alive'
   ));
   $str = curl_exec($curl);
