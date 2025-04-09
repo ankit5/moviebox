@@ -525,10 +525,11 @@ curl_close($curl);
 //  exit;
 $dom = HtmlDomParser::str_get_html($str);
 $str_new = $dom->findOne("#__NUXT_DATA__")->text();
-// print $str_new;
-// exit;
+
 $str_new = json_decode($str_new);
- 
+// print "<pre>";
+//  print_r($str_new);
+//exit;
  $season_id = '';
 foreach($str_new as $value){
  if($value->seasons) $season_id = $value->seasons;
@@ -542,7 +543,7 @@ $season = [];
 foreach($str_new[$season_id] as $key=>$value){
  // print_r($str_new[$value]->se);
   $season[$key]['se']=$str_new[$str_new[$value]->se];
-  $season[$key]['ep']=($str_new[$value]->allEp==7)?$str_new[$str_new[$value]->maxEp]:$str_new[$str_new[$value]->allEp];
+  $season[$key]['ep']=($str_new[$value]->allEp==7)?$str_new[$str_new[$value]->allEp]:$str_new[$str_new[$value]->maxEp];
 }
 $season = json_encode($season);
 // print "<pre>";
