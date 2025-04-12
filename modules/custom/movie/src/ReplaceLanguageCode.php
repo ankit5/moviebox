@@ -362,7 +362,7 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_close($curl);
   // print $str;
   // exit;
-  var_dump(json_decode($str, true)); exit;
+  //var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
