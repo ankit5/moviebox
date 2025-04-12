@@ -275,8 +275,9 @@ curl_close($curl);
      
       
        }elseif($ranking_id && $block_id){
+       // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
-        $items = $data['data']['subjectList'];
+        $items = $data['data']['list'];
         // var_export($items);
         //   exit;
         save_movie_box($items,'','',$block_id);
@@ -335,25 +336,24 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
   
-  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/ranking-list/content');
+  curl_setopt($curl, CURLOPT_URL, 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/genre-top');
   
   curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=0&id=".$ranking_id);
+  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
   //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  curl_setopt($curl, CURLOPT_USERAGENT, "com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/',
-    'Origin: https://h5.inmoviebox.com/',
-    'Accept: */*',
-    'Host: h5.inmoviebox.com',
-    'Connection: keep-alive',
-    'X-Forwarded-For: http://localhost'
+    'Referer: https://api6.aoneroom.com',
+    'Origin: https://api6.aoneroom.com',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
+    'Host: api6.aoneroom.com',
+    'x-tr-signature: 1744370763954|2|rtJ4GAO5BgaWfolNBzSGdQ=='
   ));
   $str = curl_exec($curl);
   curl_close($curl);
-  //print $str;
-  //exit;
+  // print $str;
+  // exit;
   //var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
@@ -396,7 +396,11 @@ function curlgetmoviebox_platform($i,$platform,$month){
 
 function save_movie_box($items,$platform='',$month='',$block_id=''){
   foreach($items as $post) {
-    //   var_export($post['cover']);
+    if($block_id){
+      $post = $post['info'];
+      $post['duration']=$post['durationSeconds'];
+    }
+    //   var_export($post['subjectId']);
     //  exit;
     
     $query = \Drupal::database()->select('node__field_subjectid', 't');
@@ -412,7 +416,16 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
       $node->field_month->value = $month;
       $node->field_description->value = $post['description'];
        $results[] = $node->save();
-    }else if($result<1){
+    }
+  else if($nid && $block_id){
+      
+    //$alt_title = Drupal\block\Entity\Block::load('1')->field_tanking_list_id->value;
+    
+           block_save($nid,$block_id);
+           
+    
+        }
+    else if($result<1){
     
     
     /////tags

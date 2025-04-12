@@ -65,18 +65,18 @@ class MovieCodeForm extends FormBase {
       '#attributes' => array('placeholder' => t('202502'),)
     ];
 
-    // $form['rankingid'] = [
-    //   '#type' => 'textfield',
-    //   '#title' => $this->t('rankingid'),
-    //   '#maxlength' => 20,
-    //   '#default_value' =>  '',
-    // ];
-    // $form['blockid'] = [
-    //   '#type' => 'textfield',
-    //   '#title' => $this->t('Block Id'),
-    //   '#maxlength' => 20,
-    //   '#default_value' =>  '',
-    // ];
+    $form['rankingid'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Tranding Type Id'),
+      '#maxlength' => 20,
+      '#default_value' =>  '',
+    ];
+    $form['blockid'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Block Id'),
+      '#maxlength' => 20,
+      '#default_value' =>  '',
+    ];
 
     $form['actions']['submit1'] = [
       '#type' => 'submit',
@@ -85,12 +85,12 @@ class MovieCodeForm extends FormBase {
       '#submit' => array([$this, 'submitFormOne'])
     ];
 
-    // $form['actions']['submit_ranking'] = [
-    //   '#type' => 'submit',
-    //   '#value' => $this->t('Ranking List Load'),
-    //   "#weight" => 1,
-    //   '#submit' => array([$this, 'submitFormRanking'])
-    // ];
+    $form['actions']['submit_ranking'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Tranding Type List Load'),
+      "#weight" => 1,
+      '#submit' => array([$this, 'submitFormRanking'])
+    ];
 
     // $form['actions']['submit2'] = [
     //   '#type' => 'submit',
@@ -146,7 +146,7 @@ class MovieCodeForm extends FormBase {
     // exit;
    
  while ($i <= $total) {
-  $params = [$i,'','', $field['rankingid'], $field['blockid']];
+  $params = [$i,'','', $field['rankingid'], $field['blockid'],''];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;
