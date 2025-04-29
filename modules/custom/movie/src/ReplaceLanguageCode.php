@@ -298,7 +298,7 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
  // curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=24&channelId='.$channel_id);
-  //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
+  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
@@ -315,7 +315,8 @@ function curlgetmoviebox($i,$channel_id){
     'Origin: https://h5.inmoviebox.com',
     'Accept: application/json',
     'Host: h5.inmoviebox.com',
-    'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
+    'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+    'x-client-info: {"timezone":"Asia/Calcutta"}'
     // 'X-Forwarded-For: http://localhost'
   ));
   $str = curl_exec($curl);
