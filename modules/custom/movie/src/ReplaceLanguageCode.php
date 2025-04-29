@@ -315,8 +315,7 @@ function curlgetmoviebox($i,$channel_id){
     'Origin: https://h5.inmoviebox.com',
     'Accept: application/json',
     'Host: h5.inmoviebox.com',
-    'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-    'x-client-info: {"timezone":"Asia/Calcutta"}'
+    'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
     // 'X-Forwarded-For: http://localhost'
   ));
   $str = curl_exec($curl);
