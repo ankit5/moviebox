@@ -298,23 +298,25 @@ function curlgetmoviebox($i,$channel_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
  // curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=24&channelId='.$channel_id);
-  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
+  curl_setopt($curl, CURLOPT_URL, 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/list');
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
    curl_setopt($curl, CURLOPT_POST, 1);
   // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id."&perPage=24&sort=Latest");
-  
+ // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id."&perPage=24&sort=Latest");
+ curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&channelId=".$channel_id."&genre=All&country=India&classify=All&sort=Latest&year=All");
+   
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=24&platform=Netflix");
   //curl_setopt($curl, CURLOPT_REFERER, 'https://watch23.shop/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   //curl_setopt($curl, CURLOPT_USERAGENT, "com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/web/filter?tab=movie',
-    'Origin: https://h5.inmoviebox.com',
-    'Accept: application/json',
-    'Host: h5.inmoviebox.com',
+    'Referer: https://api6.aoneroom.com',
+    'Origin: https://api6.aoneroom.com',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
+    'Host: api6.aoneroom.com',
+    'x-tr-signature: 1744448656252|2|G2yxmgowWJjgahvtpBXArw==',
     'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
     'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
     // 'X-Forwarded-For: http://localhost'
@@ -456,6 +458,11 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
     }
     }
     ////////
+//     print "<pre>";
+//     print $post['durationSeconds'];
+//     print_r($post);
+//     print "</pre>";
+// exit;
     
       if($post['title']!=''){
         $node = \Drupal::entityTypeManager()->getStorage('node')->create([
@@ -467,7 +474,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
           'field_cover' =>  json_encode($post['cover']),	
           'field_description' => $post['description'],
           'field_detailpath' => $post['detailPath'],	
-          'field_duration' => $post['duration'],
+          'field_duration' => $post['durationSeconds'],
           'field_genre' => $post['genre'],
           'field_genre_term' => $field_tags,
           'field_hasresource' => $post['hasResource'],
