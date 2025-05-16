@@ -381,10 +381,10 @@ function curlgetmoviebox_platform($i,$platform,$month){
   
   //curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=12&platform='.$platform.'&month='.$month);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
+  curl_setopt($curl, CURLOPT_URL, "https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month?page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   
    curl_setopt($curl, CURLOPT_POST, 1);
-   curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
+  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   // //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
