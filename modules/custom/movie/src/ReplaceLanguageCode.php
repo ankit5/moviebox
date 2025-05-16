@@ -379,27 +379,30 @@ function curlgetmoviebox_platform($i,$platform,$month){
   curl_setopt($curl, CURLOPT_HEADER, false);
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
-  curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=12&platform='.$platform.'&month='.$month);
+  //curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=12&platform='.$platform.'&month='.$month);
   
-  //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
+  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
-  // curl_setopt($curl, CURLOPT_POST, 1);
-  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
+   curl_setopt($curl, CURLOPT_POST, 1);
+   curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   // //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://prmovies.world/',
-    'Origin: https://prmovies.world/',
+    'Referer: https://h5.inmoviebox.com/',
+    'Origin: https://h5.inmoviebox.com/',
     'Accept: */*',
-    'Host: prmovies.world',
-    'Connection: keep-alive'
+    'Host: h5.inmoviebox.com',
+    'Connection: keep-alive',
+    'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
+    'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
+    
   ));
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
-  //exit;
-  //var_dump(json_decode($str, true)); exit;
+  exit;
+  var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
