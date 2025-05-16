@@ -383,7 +383,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
   
   curl_setopt($curl, CURLOPT_URL, "https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month?page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   
-   curl_setopt($curl, CURLOPT_POST, 1);
+  // curl_setopt($curl, CURLOPT_POST, 1);
   // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   // //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
