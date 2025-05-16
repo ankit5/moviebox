@@ -387,7 +387,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
   // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&platform=".$platform."&month=".$month);
   // //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
     'Referer: https://h5.inmoviebox.com/',
     'Origin: https://h5.inmoviebox.com/',
@@ -401,7 +401,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
   $str = curl_exec($curl);
   curl_close($curl);
   //print $str;
-  exit;
+ // exit;
   var_dump(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
