@@ -122,13 +122,13 @@ public static function replaceLangcode3($nid, &$context){
 
    //////////////////////////////////////////////
   
-   if ($message2['field_season']) {
-    $node->field_season->value = $message2['field_season'];
+   if (@$message2['field_season']) {
+    $node->field_season->value = @$message2['field_season'];
     }
 
-    if ($message2['field_description']) {
-      $node->field_description->value = $message2['field_description'];
-      }
+    // if ($message2['field_description']) {
+    //   $node->field_description->value = $message2['field_description'];
+    //   }
     
    
     $results[] = $node->save();
