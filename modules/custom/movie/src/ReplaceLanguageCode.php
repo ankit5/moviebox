@@ -259,7 +259,7 @@ curl_close($curl);
 
 }
 
- public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id, &$context)
+ public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post, &$context)
 {
 //   var_export($channel_id);
 //  exit;
@@ -282,7 +282,7 @@ curl_close($curl);
         //   exit;
         save_movie_box($items,'','',$block_id);
            }else{
-    $data = curlgetmoviebox($i,$channel_id);
+    $data = curlgetmoviebox($i,$api,$post);
     $items = $data['data']['items'];
     // var_export($data['data']);
     //   exit;
@@ -291,7 +291,7 @@ curl_close($curl);
 }
 }
 
-function curlgetmoviebox($i,$channel_id){
+function curlgetmoviebox($i,$api,$post){
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
@@ -299,13 +299,13 @@ function curlgetmoviebox($i,$channel_id){
   
  // curl_setopt($curl, CURLOPT_URL, 'https://prmovies.world/test.php?page='.$i.'&perPage=24&channelId='.$channel_id);
   //curl_setopt($curl, CURLOPT_URL, 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/list');
-  curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter');
+  curl_setopt($curl, CURLOPT_URL, $api);
   
   //curl_setopt($curl, CURLOPT_URL, 'https://h5.inmoviebox.com/wefeed-h5-bff/web/class-month');
   
    curl_setopt($curl, CURLOPT_POST, 1);
   // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&channelId=".$channel_id."&perPage=24&sort=Latest");
+  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i.$post);
  //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=12&channelId=".$channel_id."&genre=All&country=India&classify=All&sort=Latest&year=All");
    
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=24&platform=Netflix");

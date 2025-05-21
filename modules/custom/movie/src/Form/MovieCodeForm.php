@@ -42,6 +42,18 @@ class MovieCodeForm extends FormBase {
       '#maxlength' => 20,
       '#default_value' =>  '0',
     ];
+    $form['api'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Api Url'),
+      '#maxlength' => 100,
+      '#default_value' =>  'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter',
+    ];
+    $form['post'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Post Data'),
+      '#maxlength' => 100,
+      '#default_value' =>  '&channelId=1&perPage=24&sort=Latest',
+    ];
     $form['channel_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Movie type'),
@@ -178,7 +190,7 @@ class MovieCodeForm extends FormBase {
     // exit;
    
  while ($i <= $total) {
-  $params = [$i, $field['platform'], $field['month'],'','', $field['channel_id']];
+  $params = [$i, $field['platform'], $field['month'],'','', $field['channel_id'],$field['api'],$field['post']];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;
