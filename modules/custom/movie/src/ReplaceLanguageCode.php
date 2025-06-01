@@ -278,8 +278,8 @@ curl_close($curl);
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
         $items = $data['data']['list'];
-        // var_export($items);
-        //   exit;
+        var_export($items);
+          exit;
         save_movie_box($items,'','',$block_id);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
