@@ -514,11 +514,10 @@ function block_save($nid,$block_id){
 $text = $block->field_movie->getValue();
        
       $array2[]['target_id']= $nid;
-      $output = array_merge($text, $array2);
+      $output = array_unique(array_merge($text, $array2));
       // var_export($output);
       // exit;
-      unset($block->field_movie);
-      $block->field_movie = $array2;
+      $block->field_movie = $output;
        $results[] = $block->save();
 }
 
