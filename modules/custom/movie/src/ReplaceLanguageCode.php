@@ -517,6 +517,7 @@ $text = $block->field_movie->getValue();
       $output = array_merge($text, $array2);
       // var_export($output);
       // exit;
+      unset($block->field_movie);
       $block->field_movie = $array2;
        $results[] = $block->save();
 }
