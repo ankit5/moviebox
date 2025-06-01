@@ -158,7 +158,7 @@ class MovieCodeForm extends FormBase {
     // exit;
    
  while ($i <= $total) {
-  $params = [$i,'','', $field['rankingid'], $field['blockid'],''];
+  $params = [$i,'','', $field['rankingid'], $field['blockid'],'','',''];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;

@@ -44,7 +44,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views
  
  if ($view->id() == "api"){
   $page = \Drupal::request()->get('page');
-if($page > 10){
+if($page > 20){
  throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
  }
  
