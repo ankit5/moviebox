@@ -312,32 +312,33 @@ function curlgetmoviebox($i,$api,$post){
   //curl_setopt($curl, CURLOPT_REFERER, 'https://watch23.shop/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   //curl_setopt($curl, CURLOPT_USERAGENT, "com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)");
-  // curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-  //   'Referer: https://api6.aoneroom.com',
-  //   'Origin: https://api6.aoneroom.com',
-  //   'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
-  //   'Host: api6.aoneroom.com',
-  //   'x-tr-signature: 1744448656252|2|G2yxmgowWJjgahvtpBXArw==',
-  //   'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
-  //   'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
-  //   // 'X-Forwarded-For: http://localhost'
-  // ));
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/',
-    'Origin: https://h5.inmoviebox.com/',
-    'Accept: */*',
-    'Host: h5.inmoviebox.com',
-    'Connection: keep-alive',
+    'Referer: https://api6.aoneroom.com',
+    'Origin: https://api6.aoneroom.com',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
+    'Host: api6.aoneroom.com',
+    'x-tr-signature: 1744448656252|2|G2yxmgowWJjgahvtpBXArw==',
     'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
-    'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
-    
+    //'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
+    'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"tl","net":"NETWORK_WIFI","region":"PH","timezone":"Asia/Calcutta","sp_code":"51502","X-Play-Mode":"2"}'
+
   ));
+  // curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+  //   'Referer: https://h5.inmoviebox.com/',
+  //   'Origin: https://h5.inmoviebox.com/',
+  //   'Accept: */*',
+  //   'Host: h5.inmoviebox.com',
+  //   'Connection: keep-alive',
+  //   'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
+  //   //'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
+  //   'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"tl","net":"NETWORK_WIFI","region":"PH","timezone":"Asia/Calcutta","sp_code":"51502","X-Play-Mode":"2"}'
+  // ));
   $str = curl_exec($curl);
   curl_close($curl);
   // print $str;
   // exit;
-  // print "<pre>";
-  // print_r(json_decode($str, true)); exit;
+  print "<pre>";
+  print_r(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
