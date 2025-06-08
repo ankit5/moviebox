@@ -337,8 +337,8 @@ function curlgetmoviebox($i,$api,$post){
   curl_close($curl);
   // print $str;
   // exit;
-  print "<pre>";
-  print_r(json_decode($str, true)); exit;
+  // print "<pre>";
+  // print_r(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
