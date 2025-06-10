@@ -116,8 +116,9 @@ public static function replaceLangcode3($nid, &$context){
       $load =1;
     }
   }
-   // print $load;
-    //exit;
+   $load =1;
+  //  print $load;
+  //   exit;
     if($load==''){ return true; }
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
@@ -133,7 +134,7 @@ public static function replaceLangcode3($nid, &$context){
    //////////////////////////////////////////////
   
    if (@$message2['field_season']) {
-    $node->field_season->value = @$message2['field_season'];
+    $node->field_season->value = $message2['field_season'];
     }
     $node->field_load_time->value = time();
     // if ($message2['field_description']) {
