@@ -116,7 +116,7 @@ public static function replaceLangcode3($nid, &$context){
       $load =1;
     }
   }
-   $load =1;
+  // $load =1;
   //  print $load;
   //   exit;
     if($load==''){ return true; }
@@ -348,8 +348,8 @@ function curlgetmoviebox($i,$api,$post){
   curl_close($curl);
   // print $str;
   // exit;
-  print "<pre>";
-  print_r(json_decode($str, true)); exit;
+  // print "<pre>";
+  // print_r(json_decode($str, true)); exit;
   
    $data = json_decode($str,true);
    return $data;
@@ -574,12 +574,14 @@ if($season_id==''){
 }
 
 
-//print_r($str_new[22]);
+// print_r($str_new->data->seasons);
+// exit;
 $season = [];
 foreach($str_new->data->seasons as $key=>$value){
  // print_r($str_new[$value]->se);
   $season[$key]['se']=$value->se;
   $season[$key]['ep']=$value->maxEp;
+  $season[$key]['allEp']=$value->allEp;
 }
 $season = json_encode($season);
 // print "<pre>";
