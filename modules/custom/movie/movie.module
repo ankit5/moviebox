@@ -39,6 +39,13 @@ function movie_views_data() {
   return $data;
 }
 
+function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
+  // Example: Remove results from a specific view and display
+  
+   print exit;
+  
+}
+
 function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views\Plugin\views\query\Sql  $query) { 
  
  
@@ -51,7 +58,7 @@ if($page > 20){
 }
 
  if ($view->id() == "detail_movie"){
- 
+ //exit;
  $link_array = explode('/',$_SERVER["REQUEST_URI"]);
      $nid = end($link_array);
    $context ='';

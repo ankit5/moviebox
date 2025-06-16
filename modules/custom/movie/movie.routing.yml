@@ -5,3 +5,11 @@ movie.batch_movie:
     _title: 'Movie Loade'
   requirements:
     _permission: 'administer site configuration'
+
+movie.autocomplete:
+  path: '/autocomplete/{postype}'
+  defaults:
+    _controller: '\Drupal\movie\Controller\AutocompleteController::handleAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'
