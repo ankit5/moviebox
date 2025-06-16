@@ -45,14 +45,18 @@ class MovieCodeForm extends FormBase {
     $form['api'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Api Url'),
+      '#autocomplete_route_name' => 'movie.autocomplete',
+      '#autocomplete_route_parameters' => array('postype' => 'api'),
       '#maxlength' => 100,
-      '#default_value' =>  'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter',
+      '#default_value' =>  '',
     ];
     $form['post'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Post Data'),
+      '#autocomplete_route_name' => 'movie.autocomplete',
+      '#autocomplete_route_parameters' => array('postype' => 'api_data'),
       '#maxlength' => 100,
-      '#default_value' =>  '&channelId=1&perPage=24&sort=Latest',
+      '#default_value' =>  '',
     ];
     $form['channel_id'] = [
       '#type' => 'textfield',
