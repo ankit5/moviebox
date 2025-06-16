@@ -42,7 +42,7 @@ function movie_views_data() {
 function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
   // Example: Remove results from a specific view and display
   
-   print exit;
+  // print exit;
   
 }
 
