@@ -63,7 +63,8 @@ class CustomTwigExtension extends AbstractExtension {
       new TwigFunction('order_detail', [$this, 'orderDetail']),
       new TwigFunction('entity_load_uuid', [$this, 'entityLoadUuid']),
       new TwigFunction('city_value', [$this, 'cityValue']),
-      new TwigFunction('node_load', [$this, 'node_load']),
+      new TwigFunction('base64_encode', [$this, 'base64_encode']),
+      new TwigFunction('ba', [$this, 'basedecode']),
       new TwigFunction('parse_url_remove', [$this, 'parse_url_remove']),
       new TwigFunction('slug', [$this, 'slug']),
       new TwigFunction('term_json', [$this, 'term_json']),
@@ -208,6 +209,11 @@ LIMIT 1 OFFSET 0")->fetchObject();
     return '';
   }
 
+public function base64_encode($string) {
+
+  return base64_encode($string);
+
+}
   /**
    * Entity load by nid.
    */
