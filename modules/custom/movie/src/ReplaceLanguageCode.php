@@ -444,7 +444,12 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
     $nid = $query->execute()->fetchField();
     // var_export($result);
     // exit;
-    if($nid && $platform){
+     if($nid){
+      $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+      $node->field_detailpath->value = $post['detailPath'];
+       $results[] = $node->save();
+    }
+  else if($nid && $platform){
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
       $node->field_platform->value = $platform;
       $node->field_month->value = $month;
