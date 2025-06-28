@@ -118,8 +118,8 @@ public static function replaceLangcode3($nid, &$context){
   }
   $load ='';
   // $load =1;
-   print $load;
-    exit;
+   // print $load;
+   //  exit;
     if($load==''){ return true; }
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
@@ -128,9 +128,9 @@ public static function replaceLangcode3($nid, &$context){
   $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
  
   
-// print_r($message2);
+print_r($message2);
  
-//    exit;
+   exit;
   
     $results = array();
 
