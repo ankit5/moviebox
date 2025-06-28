@@ -124,8 +124,10 @@ public static function replaceLangcode3($nid, &$context){
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
 //  exit;
-   $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
+  // $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
+  $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
  
+  
 // print_r($message2);
  
 //    exit;
@@ -136,8 +138,9 @@ public static function replaceLangcode3($nid, &$context){
   
    if (@$message2['field_season']) {
     $node->field_season->value = $message2['field_season'];
-    }
     $node->field_load_time->value = time();
+    }
+    
     // if ($message2['field_description']) {
     //   $node->field_description->value = $message2['field_description'];
     //   }
@@ -588,6 +591,68 @@ foreach($str_new->data->seasons as $key=>$value){
   $season[$key]['se']=$value->se;
   $season[$key]['ep']=$value->maxEp;
   $season[$key]['allEp']=$value->allEp;
+}
+$season = json_encode($season);
+// print "<pre>";
+//  print_r($str_new);
+// print "<pre>";
+//  print_r($season);
+//   exit;
+ 
+  $movie['field_season'] = $season;
+
+
+    return $movie;
+}
+
+function getmoviebox_detail_session_old($detailpath='',$subjectid='')
+{
+  
+  $curl = curl_init();
+ // $url = 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/season-info?subjectId='.$subjectid;
+ $url = 'https://h5.inmoviebox.com/movies/'.$detailpath.'?id='.$subjectid;
+ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+curl_setopt($curl, CURLOPT_HEADER, false);
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+//curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+  'Referer: https://h5.inmoviebox.com/',
+  'Origin: https://h5.inmoviebox.com/',
+  'Accept: */*',
+  'Host: h5.inmoviebox.com',
+  'Connection: keep-alive',
+  'X-Forwarded-For: http://localhost'
+));
+$str = curl_exec($curl);
+curl_close($curl);
+//var_export($str);
+
+// var_export($str);
+//  exit;
+$dom = HtmlDomParser::str_get_html($str);
+$str_new = $dom->findOne("#__NUXT_DATA__")->text();
+
+$str_new = json_decode($str_new);
+// print "<pre>";
+//  print_r($str_new);
+//exit;
+ $season_id = '';
+foreach($str_new as $value){
+ if(@$value->seasons) $season_id = $value->seasons;
+}
+if($season_id==''){
+  return true;
+}
+
+//print_r($str_new[22]);
+$season = [];
+foreach($str_new[$season_id] as $key=>$value){
+ // print_r($str_new[$value]->se);
+  $season[$key]['se']=$str_new[$str_new[$value]->se];
+  $season[$key]['ep']=($str_new[$value]->allEp==7)?$str_new[$str_new[$value]->allEp]:$str_new[$str_new[$value]->maxEp];
 }
 $season = json_encode($season);
 // print "<pre>";
