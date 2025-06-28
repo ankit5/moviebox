@@ -116,10 +116,10 @@ public static function replaceLangcode3($nid, &$context){
       $load =1;
     }
   }
-  $load ='';
+ // $load ='';
   // $load =1;
-   // print $load;
-   //  exit;
+  //  print $load;
+  //   exit;
     if($load==''){ return true; }
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
@@ -638,7 +638,7 @@ $str_new = $dom->findOne("#__NUXT_DATA__")->text();
 $str_new = json_decode($str_new);
 // print "<pre>";
 //  print_r($str_new);
-//exit;
+// exit;
  $season_id = '';
 foreach($str_new as $value){
  if(@$value->seasons) $season_id = $value->seasons;
