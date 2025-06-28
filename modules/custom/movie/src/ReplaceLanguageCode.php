@@ -118,8 +118,8 @@ public static function replaceLangcode3($nid, &$context){
   }
   $load ='';
   // $load =1;
-   // print $load;
-   //  exit;
+   print $load;
+    exit;
     if($load==''){ return true; }
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
