@@ -651,10 +651,12 @@ if($season_id==''){
 $season = [];
 foreach($str_new[$season_id] as $key=>$value){
  // print_r($str_new[$value]->se);
+ //print $str_new[$str_new[$value]->allEp];
   $season[$key]['se']=$str_new[$str_new[$value]->se];
   $season[$key]['ep']=($str_new[$value]->allEp==7)?$str_new[$str_new[$value]->allEp]:$str_new[$str_new[$value]->maxEp];
+  $season[$key]['allEp']=$str_new[$str_new[$value]->allEp];
 }
-$season = json_encode($season);
+ $season = json_encode($season);
 // print "<pre>";
 //  print_r($str_new);
 // print "<pre>";
