@@ -659,9 +659,9 @@ foreach($str_new[$season_id] as $key=>$value){
  $season = json_encode($season);
 // print "<pre>";
 //  print_r($str_new);
-print "<pre>";
- print_r($season);
-  exit;
+// print "<pre>";
+//  print_r($season);
+//   exit;
  
   $movie['field_season'] = $season;
 
