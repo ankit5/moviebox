@@ -69,7 +69,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
       );
 
       // Order by that computed field.
-     // $query->addOrderBy(NULL, 'custom_sort', 'ASC');
+      $query->addOrderBy(NULL, 'custom_sort', 'ASC');
 
 
 
