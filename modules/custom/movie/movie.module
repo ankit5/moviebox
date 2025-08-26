@@ -49,7 +49,7 @@ function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
 function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) { 
 
 
- if ($view->id() == "api_search" && $view->current_display == 'page_1') {
+ if ($view->id() == "api_search") {
  $exposed_input = $view->exposed_raw_input;
 
     // Check if a specific exposed filter value exists.
