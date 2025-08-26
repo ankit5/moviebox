@@ -46,7 +46,7 @@ function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
   
 }
 
-function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views\Plugin\views\query\Sql  $query) { 
+function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) { 
 
 
  if ($view->id() == "api_search" && $view->current_display == 'page_1') {
@@ -57,7 +57,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views
       $filter_value = $exposed_input['query'];
 
  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
-if ($query instanceof Drupal\views\Plugin\views\query\Sql) {
+
 $query->addExpression(
   "CASE 
      WHEN {node_field_data}.title = 'article' THEN 1
@@ -67,7 +67,7 @@ $query->addExpression(
 );
 
 $query->addOrderBy(NULL, 'custom_sort', 'ASC');
-}
+
 
 
 }
