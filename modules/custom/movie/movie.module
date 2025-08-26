@@ -57,16 +57,12 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views
       $filter_value = $exposed_input['query'];
 
  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
-// Add a CASE expression to prioritize 'promoted' nodes
- $query->orderby = [];
-
-        // Add the custom ORDER BY CASE WHEN clause.
-        // Replace 'your_field_name', 'condition_value', 'order_value_1', 'order_value_2'
-        // with your actual field names and desired logic.
-        $query->orderby[] = [
-          'field' => "CASE WHEN node_field_data.title = 'condition_value' THEN 1 ELSE 2 END",
-          'direction' => 'ASC', // or 'DESC'
-        ];
+$query->add_orderby(
+  NULL,
+  "CASE WHEN {node_field_data}.title = 'article' THEN 1
+        ELSE 2 END",
+  'ASC'
+);
 }
    
   }
