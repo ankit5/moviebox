@@ -56,7 +56,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views
     if (isset($exposed_input['query'])) {
       $filter_value = $exposed_input['query'];
 
- $query->addWhere(1, "node_field_data.title", $filter_value, "SOUNDS like");
+ $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 }
    
   }
