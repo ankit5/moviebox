@@ -58,12 +58,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
 
  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 
-$query->add_orderby(
-  NULL,
-  "CASE WHEN {node_field_data}.title = 'article' THEN 1
-        ELSE 2 END",
-  'ASC'
-);
+
 
 
 
