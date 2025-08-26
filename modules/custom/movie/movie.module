@@ -59,12 +59,11 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 
   $case_expression = "CASE 
-      WHEN node_field_data.title = 'high' THEN 0
+      WHEN node_field_data.title = 'Dark' THEN 0
       ELSE 1
     END";
     
     $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
-    $query->addOrderBy('node_field_data', 'title', 'DESC');
   
 
 
