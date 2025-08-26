@@ -60,18 +60,14 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
 
  if ($query instanceof \Drupal\views\Plugin\views\query\Sql) {
       
-      // Add CASE WHEN as a computed field.
-      $query->query()->addExpression('CASE WHEN node_field_data.title = 1 THEN 0 ELSE 1 END', 'custom_sort_priority');
+ $query->orderby = [];
 
-    // Remove any existing sorts if you want your custom sort to be primary.
-    // If you want to append, skip this line.
-    unset($query->orderby);
+        // Add the ORDER BY CASE statement as a raw expression.
+        $query->addOrderBy(NULL, 'ASC', 'custom_sort_alias', "CASE
+          WHEN node_field_data.title = 'value1' THEN 1
+          ELSE 0
+        END");
 
-    // Add the custom sort based on the 'custom_sort_priority' expression.
-    $query->orderby[] = [
-      'field' => 'custom_sort_priority',
-      'direction' => 'ASC', // Sort ascending (0 before 1)
-    ];
     }
 
 
