@@ -53,8 +53,8 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  $exposed_input = $view->exposed_raw_input;
 
     // Check if a specific exposed filter value exists.
-    if (isset($exposed_input['query'])) {
-      $filter_value = $exposed_input['query'];
+    if (isset($exposed_input['query']) || isset($exposed_input['title_2'])) {
+      $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 
  //$query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 
