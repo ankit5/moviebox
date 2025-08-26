@@ -62,10 +62,9 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
       $query->addField(
         NULL,
         "CASE 
-           WHEN {node_field_data}.title = 'article' THEN 1
+           WHEN node_field_data.title = '$filter_value%' THEN 1
            ELSE 2
-         END",
-        'custom_sort'
+         END"
       );
 
       // Order by that computed field.
