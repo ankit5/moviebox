@@ -63,7 +63,8 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  $query->orderby = [];
 
         // Add the ORDER BY CASE statement as a raw expression.
-        $query->addOrderBy(NULL, NULL, NULL, "CASE 
+        $query->addOrderBy('CASE 
+          WHEN ', NULL, NULL, "CASE 
           WHEN node_field_data.title = 'value1' THEN 1
           ELSE 0
         END");
