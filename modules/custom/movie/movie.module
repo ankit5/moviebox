@@ -61,7 +61,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  if ($query instanceof \Drupal\views\Plugin\views\query\Sql) {
       
       // Add CASE WHEN as a computed field.
-      $query->addExpression(
+      $query->query()->addExpression(
         "CASE 
            WHEN node_field_data.title = 'article' THEN 1
            ELSE 2
