@@ -58,7 +58,18 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
 
  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 
+// Add a computed field expression to the query.
+      $query->addField(
+        NULL,
+        "CASE 
+           WHEN {node_field_data}.title = 'article' THEN 1
+           ELSE 2
+         END",
+        'custom_sort'
+      );
 
+      // Order by that computed field.
+      $query->addOrderBy(NULL, 'custom_sort', 'ASC');
 
 
 
