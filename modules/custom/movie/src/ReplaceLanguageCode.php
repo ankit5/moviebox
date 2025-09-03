@@ -113,7 +113,7 @@ public static function replaceLangcode3($nid, &$context){
       $load =1;
     }
     if(strtotime("+1 days", $node->field_load_time->value) < time()){
-      $load =1;
+     // $load =1;
     }
   }
  // $load ='';
@@ -128,9 +128,9 @@ public static function replaceLangcode3($nid, &$context){
  // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
  
   
-// print_r($message2);
+print_r($message2);
  
-//    exit;
+   exit;
   
     $results = array();
 
