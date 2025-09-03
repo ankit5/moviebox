@@ -124,8 +124,8 @@ public static function replaceLangcode3($nid, &$context){
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
 //  exit;
-  // $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
-  $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
+   $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
+ // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
  
   
 // print_r($message2);
@@ -546,7 +546,7 @@ function getmoviebox_detail_session($detailpath='',$subjectid='')
 {
   
   $curl = curl_init();
-  $url = 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/season-info?subjectId='.$subjectid;
+  $url = 'https://moviebox.ph/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
  
  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($curl, CURLOPT_HEADER, false);
@@ -555,14 +555,12 @@ curl_setopt($curl, CURLOPT_URL, $url);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://api6.aoneroom.com',
-    'Origin: https://api6.aoneroom.com',
-    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
-    'Host: api6.aoneroom.com',
-    'x-tr-signature: 1744448656252|2|G2yxmgowWJjgahvtpBXArw==',
-    'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
-    'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
-    // 'X-Forwarded-For: http://localhost'
+    'Referer: https://fmoviesunblocked.net/',
+  'Origin: https://fmoviesunblocked.net/',
+  'Accept: */*',
+  'Host: fmoviesunblocked.net',
+  'Connection: keep-alive',
+  'X-Forwarded-For: http://localhost'
   ));
 $str = curl_exec($curl);
 curl_close($curl);
