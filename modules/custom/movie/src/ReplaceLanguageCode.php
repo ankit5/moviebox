@@ -566,15 +566,15 @@ $str = curl_exec($curl);
 curl_close($curl);
 //var_export($str);
 
-var_export($str);
- exit;
+// var_export($str);
+//  exit;
 
 $str_new = json_decode($str);
 // print "<pre>";
 //  print_r($str_new);
 // exit;
  $season_id = '';
- if(@$str_new->data->seasons[0]->se) $season_id = $str_new->data->seasons[0]->se;
+ if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
 
 if($season_id==''){
   return true;
@@ -584,7 +584,7 @@ if($season_id==''){
 // print_r($str_new->data->seasons);
 // exit;
 $season = [];
-foreach($str_new->data->seasons as $key=>$value){
+foreach($str_new->data->resource->seasons as $key=>$value){
  // print_r($str_new[$value]->se);
   $season[$key]['se']=$value->se;
   $season[$key]['ep']=$value->maxEp;
