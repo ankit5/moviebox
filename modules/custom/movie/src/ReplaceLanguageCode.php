@@ -556,9 +556,9 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
     'Referer: https://fmoviesunblocked.net/',
-  'Origin: https://fmoviesunblocked.net/',
+  'Origin: https://moviebox.ph/',
   'Accept: */*',
-  'Host: fmoviesunblocked.net',
+  'Host: moviebox.ph',
   'Connection: keep-alive',
   'X-Forwarded-For: http://localhost'
   ));
