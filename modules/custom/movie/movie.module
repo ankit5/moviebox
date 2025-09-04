@@ -13,6 +13,8 @@ function movie_preprocess_node(&$variables) {
 $context ='';
   $nid = $variables['node']->id();
  
+
+
    $node2 = \Drupal\movie\ReplaceLanguageCode::replaceLangcode($nid,$context);
 
  $variables['#cache']['max-age'] = 0;
