@@ -45,8 +45,34 @@ function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
   
 }
 
-function movie_views_query_alter(Drupal\views\ViewExecutable $view, Drupal\views\Plugin\views\query\Sql  $query) { 
- 
+function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) { 
+
+
+ if ($view->id() == "api_search") {
+ $exposed_input = $view->exposed_raw_input;
+
+    // Check if a specific exposed filter value exists.
+    if (isset($exposed_input['query']) || isset($exposed_input['title_2'])) {
+      $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
+
+ $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
+
+  $case_expression = "CASE 
+      WHEN node_field_data.title LIKE '$filter_value' THEN 0
+      WHEN node_field_data.title LIKE '$filter_value%' THEN 1
+      WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 2
+      ELSE 3
+    END";
+    
+    $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
+  
+
+
+
+}
+   
+  }
+
  
  if ($view->id() == "api"){
   $page = \Drupal::request()->get('page');
