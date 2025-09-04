@@ -10,7 +10,6 @@ function movie_preprocess_node(&$variables) {
   $node3 = \Drupal::routeMatch()->getParameter('node');
  if ($node->getType() == 'movie' && $view_mode=='full' && $node3 instanceof \Drupal\node\NodeInterface) {
   // Get the node ID.
-  
 $context ='';
   $nid = $variables['node']->id();
  
