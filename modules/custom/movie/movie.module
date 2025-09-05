@@ -58,16 +58,16 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  if ($view->current_display == 'page_1' && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 
-  $query->addWhere(2, "node_field_data.title", "$filter_value", "like");
+  $query->addWhere(1, "node_field_data.title", $filter_value, "like");
  $query->addWhere(2, "node_field_data.title", "%$filter_value%", "like");
- $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
+ $query->addWhere(3, "node_field_data.title", $filter_value, "SOUNDS like");
 
   $case_expression = "CASE 
-      WHEN node_field_data.title LIKE '$filter_value' THEN 0
-      WHEN node_field_data.title LIKE '$filter_value%' THEN 1
-      WHEN node_field_data.title LIKE '%$filter_value%' THEN 2
-      WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 3
-      ELSE 4
+      WHEN node_field_data.title LIKE '$filter_value' THEN 1
+      WHEN node_field_data.title LIKE '$filter_value%' THEN 2
+      WHEN node_field_data.title LIKE '%$filter_value%' THEN 3
+      WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 4
+      ELSE 5
     END";
     
     $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
