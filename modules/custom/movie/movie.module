@@ -59,17 +59,13 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
       $filter_value = ($exposed_input['title'])?$exposed_input['title']:$exposed_input['title_2'];
 
   if (isset($view->exposed_raw_input['title'])) {
-      // Iterate through the query's WHERE clauses.
-      foreach ($query->where as $group_key => &$condition_group) {
-        foreach ($condition_group['conditions'] as $condition_key => &$condition) {
-          // Identify the condition related to your exposed filter.
-          // The exact structure of $condition['field'] might vary based on your filter.
-          if (isset($condition['field']) && strpos($condition['field'], 'title') !== false) {
-            // Remove the condition.
-            unset($condition_group['conditions'][$condition_key]);
-          }
+     foreach ($query->where as $group_id => $group) {
+      foreach ($group['conditions'] as $key => $condition) {
+        if (isset($condition['field']) && $condition['field'] === 'node_field_data.title') {
+          unset($query->where[$group_id]['conditions'][$key]);
         }
       }
+    }
     }
 
    $query->addWhereExpression(
