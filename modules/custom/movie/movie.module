@@ -81,6 +81,9 @@ if (isset($view->exposed_raw_input['query'])) {
       WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 4
       ELSE 5
     END";
+    $query->addWhere(2, "node_field_data.title", "$filter_value%", "like");
+ $query->addWhere(2, "node_field_data.title", "%$filter_value%", "like");
+ $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
     
     $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
 
