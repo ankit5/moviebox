@@ -71,23 +71,14 @@ if (isset($view->exposed_raw_input['query'])) {
 
    $query->addWhereExpression(
           2,
-          "MATCH(node_field_data.title) AGAINST (:search IN NATURAL LANGUAGE MODE)",
+          "MATCH(title) AGAINST (:search IN BOOLEAN MODE)",
           [':search' => $filter_value]
         );
   
-  $case_expression = "CASE 
-      WHEN node_field_data.title LIKE '$filter_value' THEN 2
-      WHEN node_field_data.title LIKE '$filter_value%' THEN 3
-      WHEN MATCH(node_field_data.title) AGAINST ('$filter_value' IN NATURAL LANGUAGE MODE) THEN 4
-      WHEN node_field_data.title LIKE '%$filter_value%' THEN 5
-      WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 6
-      ELSE 7
-    END";
-    $query->addWhere(2, "node_field_data.title", "$filter_value%", "like");
- $query->addWhere(2, "node_field_data.title", "%$filter_value%", "like");
- $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
+  $case_expression = "MATCH(title) AGAINST ('wednesday*' IN BOOLEAN MODE)";
+   
     
-    $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
+    $query->addOrderBy(NULL, $case_expression, 'DESC', 'relevance');
 
 
 
