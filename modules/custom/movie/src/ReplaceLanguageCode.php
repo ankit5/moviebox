@@ -116,7 +116,7 @@ public static function replaceLangcode3($nid, &$context){
       $load =1;
     }
   }
-  $load ='';
+  //$load ='';
   // $load =1;
   //  print $load;
   //   exit;
