@@ -59,7 +59,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 $filter_value = preg_replace("/[^A-Za-z0-9 ]/", '', $filter_value); 
 
-if (isset($view->exposed_raw_input['query'])) {
+if (isset($view->exposed_raw_input['query']) || isset($view->exposed_raw_input['title_2'])) {
      foreach ($query->where as $group_id => $group) {
       foreach ($group['conditions'] as $key => $condition) {
         if (isset($condition['field']) && $condition['field'] === 'node_field_data.title') {
