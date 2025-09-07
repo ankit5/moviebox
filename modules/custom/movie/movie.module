@@ -72,13 +72,13 @@ if (isset($view->exposed_raw_input['query'])) {
    $query->addWhereExpression(
           2,
           "MATCH(node_field_data.title) AGAINST (:search IN BOOLEAN MODE)",
-          [':search' => $filter_value]
+          [':search' => '+'.$filter_value]
         );
   
   $case_expression = "CASE 
       WHEN node_field_data.title LIKE '$filter_value' THEN 2
       WHEN node_field_data.title LIKE '$filter_value%' THEN 3
-      WHEN MATCH(node_field_data.title) AGAINST ('$filter_value' IN BOOLEAN MODE) THEN 4
+      WHEN MATCH(node_field_data.title) AGAINST ('+$filter_value' IN BOOLEAN MODE) THEN 4
       WHEN node_field_data.title LIKE '%$filter_value%' THEN 5
       WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 6
       ELSE 7
