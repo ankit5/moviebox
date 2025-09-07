@@ -71,7 +71,7 @@ if (isset($view->exposed_raw_input['query'])) {
 
    $query->addWhereExpression(
           2,
-          "MATCH(node_field_data.title) AGAINST ('$filter_value*' IN BOOLEAN MODE)"
+          "MATCH(node_field_data.title) AGAINST ("$filter_value*" IN BOOLEAN MODE)"
         );
   
   $case_expression = "MATCH(node_field_data.title) AGAINST ('$filter_value*' IN BOOLEAN MODE)";
