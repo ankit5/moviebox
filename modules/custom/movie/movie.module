@@ -71,11 +71,10 @@ if (isset($view->exposed_raw_input['query'])) {
 
    $query->addWhereExpression(
           2,
-          "MATCH(title) AGAINST (:search IN BOOLEAN MODE)",
-          [':search' => $filter_value]
+          "MATCH(title) AGAINST ('$filter_value*' IN BOOLEAN MODE)"
         );
   
-  $case_expression = "MATCH(title) AGAINST ('wednesday*' IN BOOLEAN MODE)";
+  $case_expression = "MATCH(title) AGAINST ('$filter_value*' IN BOOLEAN MODE)";
    
     
     $query->addOrderBy(NULL, $case_expression, 'DESC', 'relevance');
