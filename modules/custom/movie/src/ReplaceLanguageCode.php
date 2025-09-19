@@ -546,7 +546,7 @@ function getmoviebox_detail_session($detailpath='',$subjectid='')
 {
   
   $curl = curl_init();
-  $url = 'https://moviebox.ph/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
+  $url = 'https://fmoviesunblocked.net/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
  
  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($curl, CURLOPT_HEADER, false);
@@ -556,9 +556,9 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
     'Referer: https://fmoviesunblocked.net/',
-  'Origin: https://moviebox.ph/',
+  'Origin: https://fmoviesunblocked.net/',
   'Accept: */*',
-  'Host: moviebox.ph',
+  'Host: fmoviesunblocked.net',
   'Connection: keep-alive',
   'X-Forwarded-For: http://localhost'
   ));
