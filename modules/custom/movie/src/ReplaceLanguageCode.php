@@ -112,10 +112,11 @@ public static function replaceLangcode3($nid, &$context){
     if(!$node->field_load_time->value){
       $load =1;
     }
-    if(strtotime("+2 days", $node->field_load_time->value) < time()){
+    if(strtotime("+3 days", $node->field_load_time->value) < time()){
       $load =1;
     }
   }
+  
   //$load ='';
   // $load =1;
   //  print $load;
@@ -547,6 +548,7 @@ function getmoviebox_detail_session($detailpath='',$subjectid='')
   
   $curl = curl_init();
   $url = 'https://fmoviesunblocked.net/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
+  
  
  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($curl, CURLOPT_HEADER, false);
