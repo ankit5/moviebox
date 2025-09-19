@@ -129,9 +129,9 @@ public static function replaceLangcode3($nid, &$context){
  // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
  
   
-print_r($message2);
+// print_r($message2);
  
-   exit;
+//    exit;
   
     $results = array();
 
@@ -572,9 +572,9 @@ curl_close($curl);
 //  exit;
 
 $str_new = json_decode($str);
-print "<pre>";
- print_r($str_new);
-exit;
+// print "<pre>";
+//  print_r($str_new);
+// exit;
  $season_id = '';
  if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
 
