@@ -85,8 +85,6 @@ $query->addWhereExpression(
 
 }
 
-
-
     if ($view->current_display == 'rest_export_1' && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 
