@@ -89,7 +89,7 @@ $query->addWhereExpression(
 
     if ($view->current_display == 'page_1' || $view->current_display == 'rest_export_1' && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
-
+      $filter_value = trim($filter_value);
  $query->addWhere(2, "node_field_data.title", "$filter_value%", "like");
  $query->addWhere(2, "node_field_data.title", "%$filter_value%", "like");
  $query->addWhere(2, "node_field_data.title", "$filter_value", "SOUNDS like");
