@@ -573,9 +573,9 @@ curl_close($curl);
 
 $str_new = json_decode($str);
   if($subjectid=='7672308553189055832'){
-print "<pre>";
- print_r($str_new);
-exit;
+// print "<pre>";
+//  print_r($str_new);
+// exit;
   }
  $season_id = '';
  if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
