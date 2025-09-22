@@ -558,7 +558,7 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
     'Referer: https://fmoviesunblocked.net/',
-  'Origin: https://fmoviesunblocked.net/',
+  'Origin: https://fmoviesunblocked.net',
   'Accept: */*',
   'Host: fmoviesunblocked.net',
   'Connection: keep-alive',
@@ -572,9 +572,11 @@ curl_close($curl);
 //  exit;
 
 $str_new = json_decode($str);
-// print "<pre>";
-//  print_r($str_new);
-// exit;
+  if($subjectid=='7672308553189055832'){
+print "<pre>";
+ print_r($str_new);
+exit;
+  }
  $season_id = '';
  if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
 
