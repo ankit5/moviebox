@@ -568,15 +568,15 @@ $str = curl_exec($curl);
 curl_close($curl);
 //var_export($str);
 
-var_export($str);
- exit;
-
-$str_new = json_decode($str);
+// var_export($str);
+//  exit;
   if($subjectid=='7672308553189055832'){
-// print "<pre>";
-//  print_r($str_new);
-// exit;
+print "<pre>";
+ print_r($str);
+exit;
   }
+$str_new = json_decode($str);
+
  $season_id = '';
  if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
 
