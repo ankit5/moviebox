@@ -568,8 +568,8 @@ $str = curl_exec($curl);
 curl_close($curl);
 //var_export($str);
 
-// var_export($str);
-//  exit;
+var_export($str);
+ exit;
 
 $str_new = json_decode($str);
   if($subjectid=='7672308553189055832'){
