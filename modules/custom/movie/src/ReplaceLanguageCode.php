@@ -118,7 +118,7 @@ public static function replaceLangcode3($nid, &$context){
   }
   
   //$load ='';
-   $load =1;
+ //  $load =1;
   //  print $load;
   //   exit;
     if($load==''){ return true; }
@@ -571,9 +571,9 @@ curl_close($curl);
 // var_export($str);
 //  exit;
   if($subjectid=='7672308553189055832'){
-print "<pre>";
- print_r($str);
-exit;
+// print "<pre>";
+//  print_r($str);
+// exit;
   }
 $str_new = json_decode($str);
 
