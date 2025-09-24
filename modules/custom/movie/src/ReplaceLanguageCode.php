@@ -296,7 +296,7 @@ curl_close($curl);
         $items = $data['data']['subjectList'];
         // var_export($items);
         //   exit;
-        save_movie_box($items,'','',$block_id);
+        save_movie_box($items,'','',$block_id,$i);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
     $items = $data['data']['items'];
@@ -432,7 +432,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
    
 }
 
-function save_movie_box($items,$platform='',$month='',$block_id=''){
+function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
   foreach($items as $post) {
     if($block_id){
      // $post = $post['subjectList'];
@@ -464,7 +464,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
       
     //$alt_title = Drupal\block\Entity\Block::load('1')->field_tanking_list_id->value;
     
-           block_save($nid,$block_id);
+           block_save($nid,$block_id,$i);
            
     
         }
@@ -521,7 +521,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
         ]);
         $results[] = $node->save();
         if($node->id() && $block_id){
-          block_save($node->id(),$block_id);
+          block_save($node->id(),$block_id,$i);
         }
       }
     }
@@ -529,8 +529,13 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
      }
 }
 
-function block_save($nid,$block_id){
+function block_save($nid,$block_id,$i){
+  
   $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
+  if($i==1){
+     $block->field_movie->value ='';
+    $block->save();
+  }
 $text = $block->field_movie->getValue();
        
       $array2[]['target_id']= $nid;
