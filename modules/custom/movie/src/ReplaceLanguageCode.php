@@ -533,8 +533,7 @@ function block_save($nid,$block_id,$i){
   
   
   if($i==1){
-    var_export($i);
-    exit;
+   
     $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
      $block->field_movie->value ='';
     $block->save();
