@@ -438,8 +438,8 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
      // $post = $post['subjectList'];
      // $post['duration']=$post['durationSeconds'];
     }
-    //   var_export($post['subjectId']);
-    //  exit;
+      var_export($post);
+     exit;
     
     $query = \Drupal::database()->select('node__field_subjectid', 't');
     $query->fields('t', ['entity_id']);
@@ -450,7 +450,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
     // exit;
      if($nid){
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
-      $node->field_detailpath->value = $post['detailPath'];
+     // $node->field_detailpath->value = $post['detailPath'];
        $results[] = $node->save();
     }
   else if($nid && $platform){
