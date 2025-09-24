@@ -296,6 +296,12 @@ curl_close($curl);
         $items = $data['data']['subjectList'];
         // var_export($items);
         //   exit;
+        if($i==1){
+   
+    $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
+    $block->get('field_movie')->setValue(NULL);
+    $block->save();
+  }
         save_movie_box($items,'','',$block_id,$i);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
@@ -532,12 +538,7 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
 function block_save($nid,$block_id,$i){
   
   
-  if($i==1){
-   
-    $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
-    $block->get('field_movie')->setValue(NULL);
-    $block->save();
-  }
+ 
   $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
 $text = $block->field_movie->getValue();
        
@@ -546,7 +547,7 @@ $text = $block->field_movie->getValue();
       // var_export($output);
       // exit;
       $block->field_movie = $output;
-       $results[] = $block->save();
+        $block->save();
 }
 
 function getmoviebox_detail_session($detailpath='',$subjectid='')
