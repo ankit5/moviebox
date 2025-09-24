@@ -535,7 +535,7 @@ function block_save($nid,$block_id,$i){
   if($i==1){
    
     $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
-     $block->field_movie->value ='';
+    $block->get('field_movie')->setValue(NULL);
     $block->save();
   }
   $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
