@@ -293,7 +293,7 @@ curl_close($curl);
        }elseif($ranking_id && $block_id){
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
-        $items = $data['data'];
+        $items = $data['data']['subjectList'];
         // var_export($items);
         //   exit;
         save_movie_box($items,'','',$block_id);
@@ -435,7 +435,7 @@ function curlgetmoviebox_platform($i,$platform,$month){
 function save_movie_box($items,$platform='',$month='',$block_id=''){
   foreach($items as $post) {
     if($block_id){
-      $post = $post['subjectList'];
+     // $post = $post['subjectList'];
      // $post['duration']=$post['durationSeconds'];
     }
     //   var_export($post['subjectId']);
