@@ -531,11 +531,15 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
 
 function block_save($nid,$block_id,$i){
   
-  $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
+  
   if($i==1){
+    var_export($i);
+    exit;
+    $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
      $block->field_movie->value ='';
     $block->save();
   }
+  $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
 $text = $block->field_movie->getValue();
        
       $array2[]['target_id']= $nid;
