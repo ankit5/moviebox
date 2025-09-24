@@ -438,29 +438,29 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
      // $post = $post['subjectList'];
      // $post['duration']=$post['durationSeconds'];
     }
-      var_export($post);
-     exit;
+   //   var_export($post);
+    // exit;
     
     $query = \Drupal::database()->select('node__field_subjectid', 't');
     $query->fields('t', ['entity_id']);
     $query->condition('field_subjectid_value', $post['subjectId']);
     $result = $query->countQuery()->execute()->fetchField();
     $nid = $query->execute()->fetchField();
-    // var_export($result);
+   //  var_export($result);
     // exit;
      if($nid){
-      $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    //  $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
      // $node->field_detailpath->value = $post['detailPath'];
-       $results[] = $node->save();
+     //  $results[] = $node->save();
     }
-  else if($nid && $platform){
+   if($nid && $platform){
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
       $node->field_platform->value = $platform;
       $node->field_month->value = $month;
       $node->field_description->value = $post['description'];
        $results[] = $node->save();
     }
-  else if($nid && $block_id){
+   else if($nid && $block_id){
       
     //$alt_title = Drupal\block\Entity\Block::load('1')->field_tanking_list_id->value;
     
@@ -481,13 +481,13 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
     }
     
     //channel
-    $field_channel =[];
-    $channel = explode(",",$post['channel']);
-    foreach($channel as $item) {
-    if($item){
-    $field_channel[] = tags_create($item,'','channel');
-    }
-    }
+    // $field_channel =[];
+    // $channel = explode(",",$post['channel']);
+    // foreach($channel as $item) {
+    // if($item){
+    // $field_channel[] = tags_create($item,'','channel');
+    // }
+    // }
     ////////
 //     print "<pre>";
 //     print $post['durationSeconds'];
@@ -499,8 +499,6 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
         $node = \Drupal::entityTypeManager()->getStorage('node')->create([
           'type' => 'movie',
           'title' => $post['title'],
-          'field_channel' => $post['channel'],
-          'field_channel_term' => $field_channel,
           'field_countryname' => $post['countryName'],	
           'field_cover' =>  json_encode($post['cover']),	
           'field_description' => $post['description'],
