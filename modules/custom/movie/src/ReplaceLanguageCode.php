@@ -537,8 +537,8 @@ $text = $block->field_movie->getValue();
        
       $array2[]['target_id']= $nid;
       $output = (array_merge($text, $array2));
-      // var_export($output);
-      // exit;
+      var_export($output);
+      exit;
       $block->field_movie = $output;
        $results[] = $block->save();
 }
