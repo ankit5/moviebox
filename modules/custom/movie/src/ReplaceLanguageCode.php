@@ -293,7 +293,7 @@ curl_close($curl);
        }elseif($ranking_id && $block_id){
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
-        $items = $data['data']['list'];
+        $items = $data['data'];
         // var_export($items);
         //   exit;
         save_movie_box($items,'','',$block_id);
@@ -368,20 +368,20 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
   
-  curl_setopt($curl, CURLOPT_URL, 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/genre-top');
+  curl_setopt($curl, CURLOPT_URL, "https://h5.inmoviebox.com/wefeed-h5-bff/web/ranking-list/content?id=".$ranking_id."&page=".$i."&perPage=20");
   
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
+  //curl_setopt($curl, CURLOPT_POST, 1);
+  //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
   //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($curl, CURLOPT_USERAGENT, "com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)");
+  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
  // curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://api6.aoneroom.com',
-    'Origin: https://api6.aoneroom.com',
-    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
-    'Host: api6.aoneroom.com',
-    'x-tr-signature: 1744370763954|2|rtJ4GAO5BgaWfolNBzSGdQ=='
+    'Referer: https://h5.inmoviebox.com/',
+    'Origin: https://h5.inmoviebox.com',
+    'Host: h5.inmoviebox.com',
+    'Connection: keep-alive',
+    'X-Forwarded-For: http://localhost'
   ));
   
   
@@ -435,8 +435,8 @@ function curlgetmoviebox_platform($i,$platform,$month){
 function save_movie_box($items,$platform='',$month='',$block_id=''){
   foreach($items as $post) {
     if($block_id){
-      $post = $post['info'];
-      $post['duration']=$post['durationSeconds'];
+      $post = $post['subjectList'];
+     // $post['duration']=$post['durationSeconds'];
     }
     //   var_export($post['subjectId']);
     //  exit;
