@@ -501,7 +501,7 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
 //     print "</pre>";
 // exit;
     
-      if($post['title']!=''){
+      if($post['title'] && $post['subjectType']<=2){
         $node = \Drupal::entityTypeManager()->getStorage('node')->create([
           'type' => 'movie',
           'title' => $post['title'],
