@@ -12,9 +12,14 @@ function movie_preprocess_node(&$variables) {
   // Get the node ID.
 $context ='';
   $nid = $variables['node']->id();
- 
-
-
+ if($node->field_embed->value){
+ print $node->field_embed->value;
+ $queryString = parse_url($node->field_embed->value, PHP_URL_QUERY);
+    
+    $params = []; // Initialize an empty array to store parameters
+    parse_str($queryString, $params);
+   print $params['url'];
+}
    $node2 = \Drupal\movie\ReplaceLanguageCode::replaceLangcode($nid,$context);
 
  $variables['#cache']['max-age'] = 0;
