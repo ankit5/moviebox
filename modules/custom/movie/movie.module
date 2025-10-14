@@ -9,14 +9,21 @@ use Drupal\node\NodeInterface;
 function movie_node_presave(NodeInterface $node) {
   // Example: Set a default value for a custom field if it's empty.
   if ($node->get('field_embed')->value) {
- print $node->field_embed->value;
+// print $node->field_embed->value;
  $queryString = parse_url($node->field_embed->value, PHP_URL_QUERY);
     
-    $params = []; // Initialize an empty array to store parameters
+    $params = [];
     parse_str($queryString, $params);
-   print "<br>".$params['url'];
-exit;
-    $node->set('field_embed', 'Default value');
+   //print "<br>".$params['url'];
+//exit;
+if(@$params['enco']){
+   
+$string = $node->field_embed->value;
+$search = array($params['url'], $params['s']);
+$replace = array(base64_encode($params['url']), base64_encode($params['url']));
+$newString = str_replace($search, $replace, $string);
+    $node->set('field_embed', $newString);
+}
   }
 
 
