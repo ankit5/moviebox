@@ -19,8 +19,8 @@ function movie_node_presave(NodeInterface $node) {
 if(@$params['enco']){
    
 $string = $node->field_embed->value;
-$search = array($params['url'], $params['s']);
-$replace = array(base64_encode($params['url']), base64_encode($params['s']));
+$search = array($params['url'], $params['s'],$params['enco']);
+$replace = array(base64_encode($params['url']), base64_encode($params['s']),'');
 $newString = str_replace($search, $replace, $string);
     $node->set('field_embed', $newString);
 }
