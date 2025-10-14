@@ -20,7 +20,7 @@ if(@$params['enco']){
    
 $string = $node->field_embed->value;
 $search = array($params['url'], $params['s']);
-$replace = array(base64_encode($params['url']), base64_encode($params['url']));
+$replace = array(base64_encode($params['url']), base64_encode($params['s']));
 $newString = str_replace($search, $replace, $string);
     $node->set('field_embed', $newString);
 }
