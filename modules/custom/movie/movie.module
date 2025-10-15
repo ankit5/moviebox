@@ -2,7 +2,7 @@
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-
+use Drupal\block\Entity\Block;
 
 
 function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
@@ -12,7 +12,7 @@ function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_sta
   $block_id = '';
   if ($block instanceof Block) {
     $block_id = $block->id();
-    \Drupal::messenger()->addStatus("Editing Block with ID: " . $block_id);
+   
   }
  $form['#prefix'] = '<div class="article-title-wrapper"><a href="/admin/batch-movie?blockid='.$block_id.'&rankingid='.$form_state->getValue('rankingid')[0]['value'].'">Update</a>';
  $form['#suffix'] = '</div>';
