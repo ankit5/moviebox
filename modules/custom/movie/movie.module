@@ -12,9 +12,10 @@ function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_sta
 
   if ($block instanceof BlockContent) {
     $block_id = $block->id();
+    $field_tanking_list_id = $block->get('field_tanking_list_id')->value;
    
   }
- $form['#prefix'] = '<div class="article-title-wrapper"><a href="/admin/batch-movie?blockid='.$block_id.'&rankingid=">Update</a>';
+ $form['#prefix'] = '<div class="article-title-wrapper"><a href="/admin/batch-movie?blockid='.$block_id.'&rankingid='.$field_tanking_list_id.'">Update</a>';
  $form['#suffix'] = '</div>';
   }
 }
