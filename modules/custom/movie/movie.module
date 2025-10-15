@@ -9,10 +9,8 @@ function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_sta
   // Check if it's the form for a specific custom block type, e.g., 'basic'.
   if ($form_id === 'block_content_trending_edit_form') {
    
- $form = [
-      '#prefix' => '<div class="article-title-wrapper"><a href="/asd">Update</a>',
-      '#suffix' => '</div>',
-    ];
+ $form['#prefix'] = '<div class="article-title-wrapper"><a href="/asd">Update</a>';
+ $form['#suffix'] = '</div>';
   }
 }
 /**
