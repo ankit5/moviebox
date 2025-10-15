@@ -9,12 +9,12 @@ function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_sta
   // Check if it's the form for a specific custom block type, e.g., 'basic'.
   if ($form_id === 'block_content_trending_edit_form') {
     $block = $form_state->getFormObject()->getEntity();
-  $block_id = '';
+
   if ($block instanceof Block) {
     $block_id = $block->id();
    
   }
- $form['#prefix'] = '<div class="article-title-wrapper"><a href="/admin/batch-movie?blockid='.$block_id.'&rankingid='.$form_state->getValue('rankingid')[0]['value'].'">Update</a>';
+ $form['#prefix'] = '<div class="article-title-wrapper"><a href="/admin/batch-movie?blockid='.$block_id.'&rankingid=">Update</a>';
  $form['#suffix'] = '</div>';
   }
 }
