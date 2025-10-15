@@ -85,13 +85,13 @@ class MovieCodeForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Tranding Type Id'),
       '#maxlength' => 20,
-      '#default_value' =>  '',
+      '#default_value' =>  @$_GET['rankingid'],
     ];
     $form['blockid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Block Id'),
       '#maxlength' => 20,
-      '#default_value' =>  '',
+      '#default_value' =>   @$_GET['blockid'],
     ];
 
     $form['actions']['submit1'] = [
