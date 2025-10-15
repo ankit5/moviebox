@@ -2,7 +2,7 @@
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-use Drupal\block\Entity\Block;
+use Drupal\block_content\Entity\BlockContent;
 
 
 function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
@@ -10,7 +10,7 @@ function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_sta
   if ($form_id === 'block_content_trending_edit_form') {
     $block = $form_state->getFormObject()->getEntity();
 
-  if ($block instanceof Block) {
+  if ($block instanceof BlockContent) {
     $block_id = $block->id();
    
   }
