@@ -36,9 +36,9 @@ $enco_str = base64_encode($params['url']);
 if(@$params['enco']){
    
 $string = $node->field_embed->value;
-$search = array($params['url'], @$params['s'],$params['enco']);
-$replace = array($enco_str, base64_encode(@$params['s'] ?? ''),'');
-$newString = str_replace($search, $replace, $string);
+$newString = str_replace($params['url'],$enco_str, $string);
+$newString = (@$params['s'])?str_replace($params['s'],base64_encode($params['s']), $newString):$newString;
+$newString = (@$params['enco'])?str_replace($params['enco'],'', $newString):$newString;
     $node->set('field_embed', $newString);
 }
   }
