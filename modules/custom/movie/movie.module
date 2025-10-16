@@ -30,14 +30,14 @@ function movie_node_presave(NodeInterface $node) {
     
     $params = [];
     parse_str($queryString, $params);
-print base64_encode($params['url']);
-   print "<br>".$params['url'];
-exit;
+$enco_str = base64_encode($params['url']);
+//  print "<br>".$params['url'];
+//exit;
 if(@$params['enco']){
    
 $string = $node->field_embed->value;
 $search = array($params['url'], @$params['s'],$params['enco']);
-$replace = array(base64_encode($params['url'] ?? ''), base64_encode(@$params['s'] ?? ''),'');
+$replace = array(base64_encode($enco_str), base64_encode(@$params['s'] ?? ''),'');
 $newString = str_replace($search, $replace, $string);
     $node->set('field_embed', $newString);
 }
