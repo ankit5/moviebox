@@ -30,8 +30,8 @@ function movie_node_presave(NodeInterface $node) {
     
     $params = [];
     parse_str($queryString, $params);
-   //print "<br>".$params['url'];
-//exit;
+   print "<br>".$params['url'];
+exit;
 if(@$params['enco']){
    
 $string = $node->field_embed->value;
