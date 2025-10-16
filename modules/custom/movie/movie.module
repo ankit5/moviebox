@@ -30,6 +30,7 @@ function movie_node_presave(NodeInterface $node) {
     
     $params = [];
     parse_str($queryString, $params);
+print base64_encode($params['url']);
    print "<br>".$params['url'];
 exit;
 if(@$params['enco']){
