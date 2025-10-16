@@ -40,9 +40,13 @@ class AutocompleteController extends ControllerBase {
           'value' => '&channelId=1&country=India&perPage=24&sort=Latest',
           'label' => '&channelId=1&country=India&perPage=24&sort=Latest',
         ];
-         $results[2] = [
-          'value' => '&keyword=You&perPage=24&subjectType=1',
-          'label' => '&keyword=You&perPage=24&subjectType=1',
+        $results[2] = [
+          'value' => '&channelId=1&classify=Hindi dub&perPage=24&sort=Latest',
+          'label' => '&channelId=1&classify=Hindi dub&perPage=24&sort=Latest',
+        ];
+        $results[3] = [
+          'value' => '&keyword=You&perPage=24',
+          'label' => '&keyword=You&perPage=24',
         ];
     }
 
