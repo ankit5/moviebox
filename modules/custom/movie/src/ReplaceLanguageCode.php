@@ -112,7 +112,7 @@ public static function replaceLangcode3($nid, &$context){
     if(!$node->field_load_time->value){
       $load =1;
     }
-    if(strtotime("+3 days", $node->field_load_time->value) < time()){
+    if(strtotime("+1 days", $node->field_load_time->value) < time()){
       $load =1;
     }
   }
