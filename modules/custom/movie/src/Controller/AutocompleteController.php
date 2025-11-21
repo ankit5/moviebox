@@ -45,8 +45,8 @@ class AutocompleteController extends ControllerBase {
           'label' => '&channelId=1&classify=Hindi dub&perPage=24&sort=Latest',
         ];
         $results[3] = [
-          'value' => '&keyword=You&perPage=24',
-          'label' => '&keyword=You&perPage=24',
+          'value' => '&keyword=You&perPage=0',
+          'label' => '&keyword=You&perPage=0',
         ];
     }
 
