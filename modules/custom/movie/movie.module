@@ -108,6 +108,7 @@ $filter_value = explode(" ",$filter_value);
 foreach($filter_value as $value){
  $query->addWhere(2, "node_field_data.title", "$value %", "like");
 $query->addWhere(2, "node_field_data.title", "% $value", "like");
+$query->addWhere(2, "node_field_data.title", "% $value %", "like");
 }
   
 
