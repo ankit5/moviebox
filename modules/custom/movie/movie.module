@@ -147,8 +147,8 @@ $query->addWhereExpression(
  if ($view->current_display == 'page_1'){
 $query->addWhereExpression(
 2,
-"REPLACE(node_field_data.title, ' ', '') LIKE (:searchh)",
-          ['%:searchh%' => $filter_value]
+"REPLACE(node_field_data.title, ' ', '') LIKE '%:searchh%'",
+          [':searchh' => $filter_value]
      );
 }
 
