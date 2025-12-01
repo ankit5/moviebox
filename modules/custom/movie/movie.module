@@ -142,7 +142,7 @@ $query->addWhereExpression(
           "MATCH(node_field_data.title) AGAINST (:search IN BOOLEAN MODE)",
           [':search' => $filter_value.'*']
         );
-  
+  $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
   $case_expression = "MATCH(node_field_data.title) AGAINST ('$filter_value*' IN BOOLEAN MODE)";
    
     
