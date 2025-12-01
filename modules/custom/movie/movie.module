@@ -144,7 +144,9 @@ $query->addWhereExpression(
         );
 
   $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
-//$query->addWhere(2, REPLACE(node_field_data.title, ' ', ''), '%$filter_value%', "like");
+ if ($view->current_display == 'page_1'){
+$query->addWhere(2, REPLACE(node_field_data.title, ' ', ''), '%$filter_value%', "like");
+}
   $case_expression = "MATCH(node_field_data.title) AGAINST ('$filter_value' IN BOOLEAN MODE)";
    
     
