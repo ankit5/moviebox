@@ -100,7 +100,7 @@ function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\view
  $exposed_input = $view->exposed_raw_input;
 
     // Check if a specific exposed filter value exists.
- if (($view->current_display == 'page_1') && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
+ if (($view->current_display == 'page_4') && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 //$filter_value = preg_replace("/[^A-Za-z0-9 ]/", '', $filter_value); 
  $filter_value = trim($filter_value);
@@ -119,10 +119,12 @@ $query->addWhere(2, "node_field_data.title", "% $value %", "like");
 
 
 
- if (($view->current_display == 'page_3') && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
+
+ if (($view->current_display == 'page_1') && (isset($exposed_input['query']) || isset($exposed_input['title_2']))) {
       $filter_value = ($exposed_input['query'])?$exposed_input['query']:$exposed_input['title_2'];
 $filter_value = preg_replace("/[^A-Za-z0-9 ]/", '', $filter_value); 
 
+/*
 if (isset($view->exposed_raw_input['query']) || isset($view->exposed_raw_input['title_2'])) {
      foreach ($query->where as $group_id => $group) {
       foreach ($group['conditions'] as $key => $condition) {
@@ -132,8 +134,9 @@ if (isset($view->exposed_raw_input['query']) || isset($view->exposed_raw_input['
       }
     }
     }
+*/
 
-  
+  $filter_value = trim($filter_value);
 $query->addWhereExpression(
           2,
           "MATCH(node_field_data.title) AGAINST (:search IN BOOLEAN MODE)",
