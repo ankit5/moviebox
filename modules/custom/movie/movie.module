@@ -148,7 +148,7 @@ $query->addWhereExpression(
 // $query->addWhere(2, "node_field_data.title", $filter_value, "LIKE");
 $query->addWhereExpression(2,"REPLACE(REPLACE(node_field_data.title,'[', ''), ']', '') LIKE '$filter_value'");
 
-  $query->addOrderBy(NULL, "REPLACE(REPLACE(node_field_data.title, '[', ''), ']', '') LIKE '$filter_value'", 'ASC', 'relevance2');
+  $query->addOrderBy(NULL, "REPLACE(REPLACE(node_field_data.title, '[', ''), ']', '') LIKE '$filter_value'", 'DESC', 'relevance2');
 //}
 $query->addWhereExpression(2,"REPLACE(node_field_data.title,' ', '') LIKE '%$filter_value%'");
 
