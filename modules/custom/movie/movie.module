@@ -145,11 +145,11 @@ $query->addWhereExpression(
 
   $query->addWhere(2, "node_field_data.title", $filter_value, "SOUNDS like");
 // if ($view->current_display == 'page_1'){
-// $query->addWhere(2, "node_field_data.title", $filter_value, "like");
+ $query->addWhere(2, "node_field_data.title", $filter_value, "LIKE");
 
-  $query->addOrderBy(NULL, "node_field_data.title like '$filter_value'", 'DESC', 'relevance2');
+  $query->addOrderBy(NULL, "node_field_data.title LIKE '$filter_value'", 'DESC', 'relevance2');
 //}
-$query->addWhereExpression(2,"REPLACE(REPLACE(REPLACE(node_field_data.title, ' ', ''), '[', ''), ']', '') LIKE '%$filter_value%'");
+$query->addWhereExpression(2,"REPLACE(node_field_data.title, ' ', '') LIKE '%$filter_value%'");
 
   $case_expression = "MATCH(node_field_data.title) AGAINST ('$filter_value' IN BOOLEAN MODE)";
    
