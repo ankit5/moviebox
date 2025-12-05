@@ -349,7 +349,6 @@ function curlgetmoviebox($i,$api,$post){
     'Referer: https://h5.inmoviebox.com/',
     'Origin: https://h5.inmoviebox.com/',
     'Accept: */*',
-    'Host: h5.inmoviebox.com',
     'Connection: keep-alive',
     'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
     'x-client-info: {"timezone":"Asia/Calcutta"}'
