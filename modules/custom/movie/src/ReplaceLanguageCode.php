@@ -351,7 +351,8 @@ function curlgetmoviebox($i,$api,$post){
     'Accept: */*',
     'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
     'Connection: keep-alive',
-    'user-agent:: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+    'x-request-lang: en',
+    'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
     'x-client-info: {"timezone":"Asia/Calcutta"}'
     //'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"tl","net":"NETWORK_WIFI","region":"PH","timezone":"Asia/Calcutta","sp_code":"51502","X-Play-Mode":"2"}'
   ));
