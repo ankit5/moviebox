@@ -21,32 +21,32 @@ class AutocompleteController extends ControllerBase {
       // @todo: Apply logic for generating results based on typed_string and other
       // arguments passed.
       $results[0] = [
-          'value' => 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter',
-          'label' => 'https://h5.inmoviebox.com/wefeed-h5-bff/web/filter',
+          'value' => 'https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/filter',
+          'label' => 'https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/filter',
         ];
          $results[1] = [
-          'value' => 'https://h5.inmoviebox.com/wefeed-h5-bff/web/subject/search',
-          'label' => 'https://h5.inmoviebox.com/wefeed-h5-bff/web/subject/search',
+          'value' => 'https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/search',
+          'label' => 'https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/search',
         ];
     }
      if ($input = $request->query->get('q') && $postype=='api_data') {
       // @todo: Apply logic for generating results based on typed_string and other
       // arguments passed.
       $results[0] = [
-          'value' => '&channelId=1&perPage=24&sort=Latest',
-          'label' => '&channelId=1&perPage=24&sort=Latest',
+          'value' => '&channelId=1&perPage=28&sort=Latest',
+          'label' => '&channelId=1&perPage=28&sort=Latest',
         ];
          $results[1] = [
-          'value' => '&channelId=1&country=India&perPage=24&sort=Latest',
-          'label' => '&channelId=1&country=India&perPage=24&sort=Latest',
+          'value' => '&channelId=1&country=India&perPage=28&sort=Latest',
+          'label' => '&channelId=1&country=India&perPage=28&sort=Latest',
         ];
         $results[2] = [
-          'value' => '&channelId=1&classify=Hindi dub&perPage=24&sort=Latest',
-          'label' => '&channelId=1&classify=Hindi dub&perPage=24&sort=Latest',
+          'value' => '&channelId=1&classify=Hindi dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Hindi dub&perPage=28&sort=Latest',
         ];
         $results[3] = [
-          'value' => '&keyword=You&perPage=0',
-          'label' => '&keyword=You&perPage=0',
+          'value' => '&keyword=You&perPage=28',
+          'label' => '&keyword=You&perPage=28',
         ];
     }
 
