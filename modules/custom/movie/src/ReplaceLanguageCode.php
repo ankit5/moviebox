@@ -351,8 +351,7 @@ function curlgetmoviebox($i,$api,$post){
     'accept: application/json',
     'accept-language: en-US,en;q=0.9',
     'content-type: application/json',
-    'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
-    'Connection: keep-alive',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
     'x-request-lang: en',
     'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
     'x-client-info: {"timezone":"Asia/Calcutta"}'
