@@ -312,8 +312,32 @@ curl_close($curl);
        }
 }
 }
+function curlgetmoviebox($i,$api,$post){
+ $curl = curl_init();
+  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+  curl_setopt($curl, CURLOPT_HEADER, false);
+  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+   curl_setopt($curl, CURLOPT_URL, 'https://netmirror.beer/testcurl.php?i='.$i.'&api='.$api.'&post='.$post);
+  //  curl_setopt($curl, CURLOPT_POST, 1);
+  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i.$post);
+   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'referer: https://netmirror.beer/',
+    'origin: https://netmirror.beer',
+    'accept: application/json',
+   ));
+  $str = curl_exec($curl);
+  curl_close($curl);
+  return $str;
+
+}
 
 function curlgetmoviebox($i,$api,$post){
+  $str = curlgetmoviebox_new($i,$api,$post);
+  print $str;
+  exit;
+  $data = json_decode($str,true);
+   return $data;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
