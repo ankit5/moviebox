@@ -31,7 +31,7 @@ class MovieCodeForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Debug'),
       '#maxlength' => 20,
-      '#default_value' =>  '',
+      '#default_value' =>  'false',
       '#description' =>'Debug = true'
     ];
     
