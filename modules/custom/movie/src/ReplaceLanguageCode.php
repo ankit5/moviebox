@@ -275,7 +275,7 @@ curl_close($curl);
 
 }
 
- public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post, &$context)
+ public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post,$debug='' &$context)
 {
 //   var_export($channel_id);
 //  exit;
@@ -294,8 +294,10 @@ curl_close($curl);
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
         $items = $data['data']['subjectList'];
-        // var_export($items);
-        //   exit;
+        if($debug){
+    var_export($data['data']);
+      exit;
+    }
         if($i==1){
    
     $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
@@ -306,8 +308,10 @@ curl_close($curl);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
     $items = $data['data']['items'];
-    // var_export($data['data']);
-    //   exit;
+    if($debug){
+    var_export($data['data']);
+      exit;
+    }
     save_movie_box($items);
        }
 }
@@ -336,8 +340,8 @@ function curlgetmoviebox($i,$api,$post){
   $str = curlgetmoviebox_new($i,$api,$post);
   
   $data = json_decode($str,true);
-  print_r($data);
-  exit;
+  // print_r($data);
+  // exit;
    return $data;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
