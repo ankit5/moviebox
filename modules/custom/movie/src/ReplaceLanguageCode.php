@@ -275,7 +275,7 @@ curl_close($curl);
 
 }
 
- public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post,$debug='', &$context)
+ public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post,$debug, &$context)
 {
  //  var_export($debug);
  // exit;
@@ -294,7 +294,7 @@ curl_close($curl);
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
         $items = $data['data']['subjectList'];
-        if($debug){
+        if($debug=='true'){
     var_export($data['data']);
       exit;
     }
@@ -308,7 +308,7 @@ curl_close($curl);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
     $items = $data['data']['items'];
-    if($debug){
+     if($debug=='true'){
     var_export($data['data']);
       exit;
     }
