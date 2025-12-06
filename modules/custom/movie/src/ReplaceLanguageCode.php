@@ -312,7 +312,7 @@ curl_close($curl);
        }
 }
 }
-function curlgetmoviebox($i,$api,$post){
+function curlgetmoviebox_new($i,$api,$post){
  $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
