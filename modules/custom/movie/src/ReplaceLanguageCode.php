@@ -336,7 +336,7 @@ function curlgetmoviebox($i,$api,$post){
   $str = curlgetmoviebox_new($i,$api,$post);
   
   $data = json_decode($str,true);
-  print $data;
+  print_r($data);
   exit;
    return $data;
   $curl = curl_init();
