@@ -27,6 +27,13 @@ class MovieCodeForm extends FormBase {
     $form['actions'] = [
       '#type' => 'actions',
     ];
+    $form['debug'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Debug'),
+      '#maxlength' => 20,
+      '#default_value' =>  '',
+      '#description' =>'Debug = true'
+    ];
     
     $form['pageno'] = [
       '#type' => 'textfield',
@@ -162,7 +169,7 @@ class MovieCodeForm extends FormBase {
     // exit;
    
  while ($i <= $total) {
-  $params = [$i,'','', $field['rankingid'], $field['blockid'],'','',''];
+  $params = [$i,'','', $field['rankingid'], $field['blockid'],'','','',$field['debug']];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;
@@ -194,7 +201,7 @@ class MovieCodeForm extends FormBase {
     // exit;
    
  while ($i <= $total) {
-  $params = [$i, $field['platform'], $field['month'],'','', $field['channel_id'],$field['api'],$field['post']];
+  $params = [$i, $field['platform'], $field['month'],'','', $field['channel_id'],$field['api'],$field['post'],$field['debug']];
     $batch['operations'][] = ['\Drupal\movie\ReplaceLanguageCode::getmoviebox', $params];
  
   // echo $i;
