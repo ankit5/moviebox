@@ -403,7 +403,7 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
   
-  curl_setopt($curl, CURLOPT_URL, "https://h5.inmoviebox.com/wefeed-h5-bff/web/ranking-list/content?id=".$ranking_id."&page=".$i."&perPage=20");
+  curl_setopt($curl, CURLOPT_URL, "https://h5-api.aoneroom.com/wefeed-h5api-bff/ranking-list/content?id=".$ranking_id."&page=".$i."&perPage=20");
   
   //curl_setopt($curl, CURLOPT_POST, 1);
   //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
