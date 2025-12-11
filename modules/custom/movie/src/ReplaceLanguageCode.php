@@ -412,10 +412,13 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
  // curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/',
-    'Origin: https://h5.inmoviebox.com',
-    'Host: h5.inmoviebox.com',
-    'Connection: keep-alive',
+    'referer: https://h5.inmoviebox.com/',
+    'origin: https://h5.inmoviebox.com',
+    'accept: application/json',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
+    'x-request-lang: en',
+    'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+    'x-client-info: {"timezone":"Asia/Calcutta"}'
     'X-Forwarded-For: http://localhost'
   ));
   
