@@ -189,7 +189,6 @@ $filter_value = str_replace("'", "\'", $filter_value);
       WHEN node_field_data.title LIKE '$filter_value' THEN 2
       WHEN node_field_data.title LIKE '$filter_value%' THEN 3
       WHEN node_field_data.title LIKE '%$filter_value%' THEN 1
-      WHEN node_field_data.title SOUNDS LIKE '$filter_value' THEN 4
       ELSE 5
     END";
     
