@@ -103,6 +103,25 @@ public static function replaceLangcode3($nid, &$context){
   public static function replaceLangcode($nid, &$context){
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $message = 'Replacing langcode(und to de)...';
+    $results = array();
+     // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
+     if($node->field_subjectid->value=='8802963787692345120'){
+   $message3 =  getmoviebox_detail_dub_trailer($node->field_detailpath->value,$node->field_subjectid->value);
+    
+     if (@$message3['field_trailer']) {
+    $node->field_trailer->value = $message3['field_trailer'];
+    }
+     if (@$message3['field_dub']) {
+    $node->field_dub->value = $message3['field_dub'];
+    }
+     if (@$message3['field_description']) {
+    $node->field_description->value = $message3['field_description'];
+    }
+     $results[] = $node->save();
+     }
+
+
+    
     $load ='';
     if($node->field_season->value=='' && $node->field_subjecttype->value=='2')
     {
@@ -125,29 +144,29 @@ public static function replaceLangcode3($nid, &$context){
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
 //  exit;
+
    $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
- // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
- 
-  
+    
+
 // print_r($message2);
  
 //    exit;
   
-    $results = array();
+    
 
    //////////////////////////////////////////////
-  
+   
    if (@$message2['field_season']) {
     $node->field_season->value = $message2['field_season'];
     $node->field_load_time->value = time();
     }
-    
+    $results[] = $node->save();
     // if ($message2['field_description']) {
     //   $node->field_description->value = $message2['field_description'];
     //   }
     
    
-    $results[] = $node->save();
+    
     
   }
 
@@ -580,6 +599,60 @@ $text = $block->field_movie->getValue();
       // exit;
       $block->field_movie = $output;
         $block->save();
+}
+
+function getmoviebox_detail_dub_trailer($detailpath='',$subjectid='')
+{
+  
+  $curl = curl_init();
+  $url = 'https://fmoviesunblocked.net/wefeed-h5api-bff/detail?detailPath='.$detailpath;
+  
+ 
+ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+curl_setopt($curl, CURLOPT_HEADER, false);
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+//curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+ curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://fmoviesunblocked.net/',
+  'Origin: https://fmoviesunblocked.net',
+  'Accept: */*',
+  'Host: fmoviesunblocked.net',
+  'Connection: keep-alive',
+  'X-Forwarded-For: http://localhost'
+  ));
+$str = curl_exec($curl);
+curl_close($curl);
+//var_export($str);
+
+// var_export($str);
+//  exit;
+
+$str_new = json_decode($str);
+
+ $trailer = '';
+  if(@$str_new->data->subject->trailer->videoAddress->videoId){
+   $trailer['videoId'] = $str_new->data->subject->trailer->videoAddress->videoId;
+ $trailer['url'] = $str_new->data->subject->trailer->videoAddress->url;
+ $trailer = json_encode($trailer);
+  }
+  
+  $dubs = '';
+  if(@$str_new->data->subject->dubs){
+  $dubs = json_encode($str_new->data->subject->dubs);
+  }
+
+  $description ='';
+  if(@$str_new->data->subject->description){
+    $description = json_encode($str_new->data->subject->description);
+  }
+  
+ 
+  $movie['field_trailer'] = $trailer;
+   $movie['field_dub'] = $dubs;
+   $movie['field_description'] = $description;
+
 }
 
 function getmoviebox_detail_session($detailpath='',$subjectid='')
