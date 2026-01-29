@@ -107,7 +107,7 @@ public static function replaceLangcode3($nid, &$context){
      // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
     print $node->field_loaded->value;
     
-     if($node->field_subjectid->value=='8802963787692345120old'){
+     if($node->field_subjectid->value=='8802963787692345120'){
    $message3 =  getmoviebox_detail_dub_trailer($node->field_detailpath->value,$node->field_subjectid->value);
     
      if (@$message3['field_trailer']) {
@@ -119,6 +119,7 @@ public static function replaceLangcode3($nid, &$context){
      if (@$message3['field_description']) {
     $node->field_description->value = $message3['field_description'];
     }
+    $node->field_loaded->value = time();
      $results[] = $node->save();
      }
 
