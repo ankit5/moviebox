@@ -630,12 +630,12 @@ curl_close($curl);
 //  exit;
 
 $str_new = json_decode($str);
-  print "<pre>";
- print_r($str_new);
+ //  print "<pre>";
+ // print_r($str_new);
 //exit;
 
  $trailer = [];
-  print $str_new->data->subject->trailer->videoAddress->videoId;
+ // print $str_new->data->subject->trailer->videoAddress->videoId;
   if(@$str_new->data->subject->trailer->videoAddress->videoId){
     
    $trailer['videoId'] = $str_new->data->subject->trailer->videoAddress->videoId;
