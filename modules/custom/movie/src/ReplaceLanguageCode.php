@@ -107,7 +107,7 @@ public static function replaceLangcode3($nid, &$context){
      // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
   //  print $node->field_loaded->value;
     
-     if($node->field_loaded->value=='asd'){
+     if($node->field_loaded->value==''){
    $message3 =  getmoviebox_detail_dub_trailer($node->field_detailpath->value,$node->field_subjectid->value);
     
      if (@$message3['field_trailer']) {
