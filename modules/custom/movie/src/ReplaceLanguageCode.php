@@ -635,6 +635,7 @@ $str_new = json_decode($str);
 //exit;
 
  $trailer = '';
+  print $str_new->data->subject->trailer->videoAddress->videoId;
   if(@$str_new->data->subject->trailer->videoAddress->videoId){
    $trailer['videoId'] = $str_new->data->subject->trailer->videoAddress->videoId;
  $trailer['url'] = $str_new->data->subject->trailer->videoAddress->url;
