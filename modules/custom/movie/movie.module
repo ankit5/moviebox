@@ -192,7 +192,7 @@ $filter_value = str_replace("'", "\'", $filter_value);
       ELSE 5
     END";
     
-    $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
+  //  $query->addOrderBy(NULL, $case_expression, 'ASC', 'priority_sort');
   
 
 
