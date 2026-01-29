@@ -630,6 +630,9 @@ curl_close($curl);
 //  exit;
 
 $str_new = json_decode($str);
+  print "<pre>";
+ print_r($str_new);
+exit;
 
  $trailer = '';
   if(@$str_new->data->subject->trailer->videoAddress->videoId){
