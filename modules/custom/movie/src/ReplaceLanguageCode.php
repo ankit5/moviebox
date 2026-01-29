@@ -657,7 +657,7 @@ $str_new = json_decode($str);
   $movie['field_trailer'] = $trailer;
    $movie['field_dub'] = $dubs;
    $movie['field_description'] = $description;
-
+ return $movie;
 }
 
 function getmoviebox_detail_session($detailpath='',$subjectid='')
