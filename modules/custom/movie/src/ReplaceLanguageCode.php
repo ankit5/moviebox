@@ -105,6 +105,8 @@ public static function replaceLangcode3($nid, &$context){
     $message = 'Replacing langcode(und to de)...';
     $results = array();
      // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
+    print $node->field_loaded->value;
+    
      if($node->field_subjectid->value=='8802963787692345120old'){
    $message3 =  getmoviebox_detail_dub_trailer($node->field_detailpath->value,$node->field_subjectid->value);
     
