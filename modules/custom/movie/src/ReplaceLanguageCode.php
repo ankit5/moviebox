@@ -632,7 +632,7 @@ curl_close($curl);
 $str_new = json_decode($str);
   print "<pre>";
  print_r($str_new);
-exit;
+//exit;
 
  $trailer = '';
   if(@$str_new->data->subject->trailer->videoAddress->videoId){
