@@ -103,6 +103,28 @@ public static function replaceLangcode3($nid, &$context){
   public static function replaceLangcode($nid, &$context){
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $message = 'Replacing langcode(und to de)...';
+    $results = array();
+     // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
+  //  print $node->field_loaded->value;
+    
+     if($node->field_loaded->value==''){
+   $message3 =  getmoviebox_detail_dub_trailer($node->field_detailpath->value,$node->field_subjectid->value);
+    
+     if (@$message3['field_trailer']) {
+    $node->field_trailer->value = $message3['field_trailer'];
+    }
+     if (@$message3['field_dub']) {
+    $node->field_dub->value = $message3['field_dub'];
+    }
+     if (@$message3['field_description']) {
+    $node->field_description->value = $message3['field_description'];
+    }
+    $node->field_loaded->value = time();
+     $results[] = $node->save();
+     }
+
+
+    
     $load ='';
     if($node->field_season->value=='' && $node->field_subjecttype->value=='2')
     {
@@ -112,41 +134,42 @@ public static function replaceLangcode3($nid, &$context){
     if(!$node->field_load_time->value){
       $load =1;
     }
-    if(strtotime("+2 days", $node->field_load_time->value) < time()){
+    if(strtotime("+1 days", $node->field_load_time->value) < time()){
       $load =1;
     }
   }
+  
   //$load ='';
-  // $load =1;
+ //  $load =1;
   //  print $load;
   //   exit;
     if($load==''){ return true; }
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
 //  exit;
+
    $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
- // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
- 
-  
+    
+
 // print_r($message2);
  
 //    exit;
   
-    $results = array();
+    
 
    //////////////////////////////////////////////
-  
+   
    if (@$message2['field_season']) {
     $node->field_season->value = $message2['field_season'];
     $node->field_load_time->value = time();
     }
-    
+    $results[] = $node->save();
     // if ($message2['field_description']) {
     //   $node->field_description->value = $message2['field_description'];
     //   }
     
    
-    $results[] = $node->save();
+    
     
   }
 
@@ -274,10 +297,10 @@ curl_close($curl);
 
 }
 
- public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post, &$context)
+ public static function getmoviebox($i,$platform,$month,$ranking_id,$block_id,$channel_id,$api,$post,$debug, &$context)
 {
-//   var_export($channel_id);
-//  exit;
+ //  var_export($debug);
+ // exit;
   //https://h5.inmoviebox.com/wefeed-h5-bff/web/subject/play?subjectId=7415754612038583632&se=1&ep=1
  $message = 'Replacing langcode(und to de)...';
     $results = array();
@@ -292,21 +315,56 @@ curl_close($curl);
        }elseif($ranking_id && $block_id){
        // exit;
         $data = curlgetmoviebox_ranking($i,$ranking_id);
-        $items = $data['data']['list'];
-        // var_export($items);
-        //   exit;
-        save_movie_box($items,'','',$block_id);
+        $items = $data['data']['subjectList'];
+        if($debug=='true'){
+    var_export($data['data']);
+      exit;
+    }
+        if($i==1){
+   
+    $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
+    $block->get('field_movie')->setValue(NULL);
+    $block->save();
+  }
+        save_movie_box($items,'','',$block_id,$i);
            }else{
     $data = curlgetmoviebox($i,$api,$post);
     $items = $data['data']['items'];
-    // var_export($data['data']);
-    //   exit;
+     if($debug=='true'){
+    var_export($data['data']);
+      exit;
+    }
     save_movie_box($items);
        }
 }
 }
+function curlgetmoviebox_new($i,$api,$post){
+ $curl = curl_init();
+  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+  curl_setopt($curl, CURLOPT_HEADER, false);
+  curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+   curl_setopt($curl, CURLOPT_URL, 'https://netmirror.beer/testcurl.php?i='.$i.'&api='.$api.'&post='.$post);
+  //  curl_setopt($curl, CURLOPT_POST, 1);
+  // curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i.$post);
+   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'referer: https://netmirror.beer/',
+    'origin: https://netmirror.beer',
+    'accept: application/json',
+   ));
+  $str = curl_exec($curl);
+  curl_close($curl);
+  return $str;
+
+}
 
 function curlgetmoviebox($i,$api,$post){
+  $str = curlgetmoviebox_new($i,$api,$post);
+  
+  $data = json_decode($str,true);
+  // print_r($data);
+  // exit;
+   return $data;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
@@ -339,21 +397,21 @@ function curlgetmoviebox($i,$api,$post){
 
   // ));
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://h5.inmoviebox.com/',
-    'Origin: https://h5.inmoviebox.com/',
-    'Accept: */*',
-    'Host: h5.inmoviebox.com',
-    'Connection: keep-alive',
-    'user-agent:: com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)',
-    'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"hi","net":"NETWORK_WIFI","region":"IN","timezone":"Asia/Calcutta","sp_code":"40416","X-Play-Mode":"2"}'
+    'referer: https://h5.inmoviebox.com/',
+    'origin: https://h5.inmoviebox.com',
+    'accept: application/json',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
+    'x-request-lang: en',
+    'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+    'x-client-info: {"timezone":"Asia/Calcutta"}'
     //'x-client-info: {"package_name":"com.community.oneroom","version_name":"3.0.01.0411.03","version_code":50020038,"os":"android","os_version":"7.1.2","install_ch":"ps","device_id":"ce2435d7e22e3fb3dc80710311df803a","install_store":"ps","gaid":"ddf9ce6c-fed8-4704-abb4-d79915482cc7","brand":"samsung","model":"SM-N976N","system_language":"tl","net":"NETWORK_WIFI","region":"PH","timezone":"Asia/Calcutta","sp_code":"51502","X-Play-Mode":"2"}'
   ));
   $str = curl_exec($curl);
   curl_close($curl);
-  // print $str;
-  // exit;
-  // print "<pre>";
-  // print_r(json_decode($str, true)); exit;
+ // print $str;
+  //exit;
+ // print "<pre>";
+ // print_r($str); exit;
   
    $data = json_decode($str,true);
    return $data;
@@ -367,20 +425,23 @@ function curlgetmoviebox_ranking($i,$ranking_id){
   curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
   
   
-  curl_setopt($curl, CURLOPT_URL, 'https://api6.aoneroom.com/wefeed-mobile-bff/subject-api/genre-top');
+  curl_setopt($curl, CURLOPT_URL, "https://h5-api.aoneroom.com/wefeed-h5api-bff/ranking-list/content?id=".$ranking_id."&page=".$i."&perPage=20");
   
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
+  //curl_setopt($curl, CURLOPT_POST, 1);
+  //curl_setopt($curl, CURLOPT_POSTFIELDS, "page=".$i."&perPage=10&type=".$ranking_id);
   //curl_setopt($curl, CURLOPT_REFERER, 'https://h5.inmoviebox.com/');
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($curl, CURLOPT_USERAGENT, "com.community.oneroom/50020038 (Linux; U; Android 7.1.2; hi_IN; SM-N976N; Build/QP1A.190711.020; Cronet/136.0.7064.0)");
+  curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
  // curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
   curl_setopt($curl, CURLOPT_HTTPHEADER , array(
-    'Referer: https://api6.aoneroom.com',
-    'Origin: https://api6.aoneroom.com',
-    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjMzNzA3MTI1MDUwNTkzNjMwMDgsImV4cCI6MTc1MjE0NDI1MCwiaWF0IjoxNzQ0MzY3OTUwfQ.sedWQ7HL-5WPOqWceQXoR4fnaGg6y3xmqT6GzcVCyGU',
-    'Host: api6.aoneroom.com',
-    'x-tr-signature: 1744370763954|2|rtJ4GAO5BgaWfolNBzSGdQ=='
+    'referer: https://h5.inmoviebox.com/',
+    'origin: https://h5.inmoviebox.com',
+    'accept: application/json',
+    'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjYzODI5MzIyNjA1NTk1MDQ4MTYsImF0cCI6MywiZXh0IjoiMTc2NDg0OTY1MCIsImV4cCI6MTc3MjYyNTY1MCwiaWF0IjoxNzY0ODQ5MzUwfQ.2Ch9oAezqOUskmFoEMrlD4dCCsWJx7r46L0ewDEItQM',
+    'x-request-lang: en',
+    'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+    'x-client-info: {"timezone":"Asia/Calcutta"}',
+    'X-Forwarded-For: http://localhost'
   ));
   
   
@@ -431,39 +492,39 @@ function curlgetmoviebox_platform($i,$platform,$month){
    
 }
 
-function save_movie_box($items,$platform='',$month='',$block_id=''){
+function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
   foreach($items as $post) {
     if($block_id){
-      $post = $post['info'];
-      $post['duration']=$post['durationSeconds'];
+     // $post = $post['subjectList'];
+     // $post['duration']=$post['durationSeconds'];
     }
-    //   var_export($post['subjectId']);
-    //  exit;
+   //   var_export($post);
+    // exit;
     
     $query = \Drupal::database()->select('node__field_subjectid', 't');
     $query->fields('t', ['entity_id']);
     $query->condition('field_subjectid_value', $post['subjectId']);
     $result = $query->countQuery()->execute()->fetchField();
     $nid = $query->execute()->fetchField();
-    // var_export($result);
+   //  var_export($result);
     // exit;
      if($nid){
-      $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
-      $node->field_detailpath->value = $post['detailPath'];
-       $results[] = $node->save();
+    //  $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+     // $node->field_detailpath->value = $post['detailPath'];
+     //  $results[] = $node->save();
     }
-  else if($nid && $platform){
+   if($nid && $platform){
       $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
       $node->field_platform->value = $platform;
       $node->field_month->value = $month;
       $node->field_description->value = $post['description'];
        $results[] = $node->save();
     }
-  else if($nid && $block_id){
+   else if($nid && $block_id){
       
     //$alt_title = Drupal\block\Entity\Block::load('1')->field_tanking_list_id->value;
     
-           block_save($nid,$block_id);
+           block_save($nid,$block_id,$i);
            
     
         }
@@ -480,13 +541,13 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
     }
     
     //channel
-    $field_channel =[];
-    $channel = explode(",",$post['channel']);
-    foreach($channel as $item) {
-    if($item){
-    $field_channel[] = tags_create($item,'','channel');
-    }
-    }
+    // $field_channel =[];
+    // $channel = explode(",",$post['channel']);
+    // foreach($channel as $item) {
+    // if($item){
+    // $field_channel[] = tags_create($item,'','channel');
+    // }
+    // }
     ////////
 //     print "<pre>";
 //     print $post['durationSeconds'];
@@ -494,12 +555,10 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
 //     print "</pre>";
 // exit;
     
-      if($post['title']!=''){
+      if($post['title'] && $post['subjectType']<=2){
         $node = \Drupal::entityTypeManager()->getStorage('node')->create([
           'type' => 'movie',
           'title' => $post['title'],
-          'field_channel' => $post['channel'],
-          'field_channel_term' => $field_channel,
           'field_countryname' => $post['countryName'],	
           'field_cover' =>  json_encode($post['cover']),	
           'field_description' => $post['description'],
@@ -522,7 +581,7 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
         ]);
         $results[] = $node->save();
         if($node->id() && $block_id){
-          block_save($node->id(),$block_id);
+          block_save($node->id(),$block_id,$i);
         }
       }
     }
@@ -530,7 +589,10 @@ function save_movie_box($items,$platform='',$month='',$block_id=''){
      }
 }
 
-function block_save($nid,$block_id){
+function block_save($nid,$block_id,$i){
+  
+  
+ 
   $block = \Drupal\block_content\Entity\BlockContent::load($block_id);
 $text = $block->field_movie->getValue();
        
@@ -539,14 +601,15 @@ $text = $block->field_movie->getValue();
       // var_export($output);
       // exit;
       $block->field_movie = $output;
-       $results[] = $block->save();
+        $block->save();
 }
 
-function getmoviebox_detail_session($detailpath='',$subjectid='')
+function getmoviebox_detail_dub_trailer($detailpath='',$subjectid='')
 {
   
   $curl = curl_init();
-  $url = 'https://moviebox.ph/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
+  $url = 'https://fmoviesunblocked.net/wefeed-h5api-bff/detail?detailPath='.$detailpath;
+  
  
  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($curl, CURLOPT_HEADER, false);
@@ -556,9 +619,9 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 //curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
  curl_setopt($curl, CURLOPT_HTTPHEADER , array(
     'Referer: https://fmoviesunblocked.net/',
-  'Origin: https://moviebox.ph/',
+  'Origin: https://fmoviesunblocked.net',
   'Accept: */*',
-  'Host: moviebox.ph',
+  'Host: fmoviesunblocked.net',
   'Connection: keep-alive',
   'X-Forwarded-For: http://localhost'
   ));
@@ -570,9 +633,70 @@ curl_close($curl);
 //  exit;
 
 $str_new = json_decode($str);
+ //  print "<pre>";
+ // print_r($str_new);
+//exit;
+
+ $trailer = [];
+ // print $str_new->data->subject->trailer->videoAddress->videoId;
+  if(@$str_new->data->subject->trailer->videoAddress->videoId){
+    
+   $trailer['videoId'] = $str_new->data->subject->trailer->videoAddress->videoId;
+ $trailer['url'] = $str_new->data->subject->trailer->videoAddress->url;
+ $trailer = json_encode($trailer);
+  }
+  
+  $dubs = '';
+  if(@$str_new->data->subject->dubs){
+  $dubs = json_encode($str_new->data->subject->dubs);
+  }
+
+  $description ='';
+  if(@$str_new->data->subject->description){
+    $description = json_encode($str_new->data->subject->description);
+  }
+  
+ 
+  $movie['field_trailer'] = $trailer;
+   $movie['field_dub'] = $dubs;
+   $movie['field_description'] = $description;
+ return $movie;
+}
+
+function getmoviebox_detail_session($detailpath='',$subjectid='')
+{
+  
+  $curl = curl_init();
+  $url = 'https://fmoviesunblocked.net/wefeed-h5-bff/web/subject/detail?subjectId='.$subjectid;
+  
+ 
+ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+curl_setopt($curl, CURLOPT_HEADER, false);
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+//curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0");
+ curl_setopt($curl, CURLOPT_HTTPHEADER , array(
+    'Referer: https://fmoviesunblocked.net/',
+  'Origin: https://fmoviesunblocked.net',
+  'Accept: */*',
+  'Host: fmoviesunblocked.net',
+  'Connection: keep-alive',
+  'X-Forwarded-For: http://localhost'
+  ));
+$str = curl_exec($curl);
+curl_close($curl);
+//var_export($str);
+
+// var_export($str);
+//  exit;
+  if($subjectid=='7672308553189055832'){
 // print "<pre>";
-//  print_r($str_new);
+//  print_r($str);
 // exit;
+  }
+$str_new = json_decode($str);
+
  $season_id = '';
  if(@$str_new->data->resource->seasons[0]->se) $season_id = $str_new->data->resource->seasons[0]->se;
 
