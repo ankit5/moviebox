@@ -177,7 +177,7 @@ if (isset($view->exposed_raw_input['query']) || isset($view->exposed_raw_input['
     }
 
 $filter_value_exp = explode(" ",$filter_value);
-
+$filter_value_exp = str_replace("kgf","k.g.f",$filter_value_exp);
  $query->addWhere(2, "node_field_data.title", "$filter_value_exp[0]", "like");
  $query->addWhere(2, "node_field_data.title", "$filter_value", "like");
  $query->addWhere(2, "node_field_data.title", "$filter_value%", "like");
