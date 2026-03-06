@@ -5,6 +5,7 @@ use Drupal\node\NodeInterface;
 use Drupal\block_content\Entity\BlockContent;
 
 
+
 function movie_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   // Check if it's the form for a specific custom block type, e.g., 'basic'.
   if ($form_id === 'block_content_trending_edit_form') {
@@ -231,12 +232,19 @@ if (
       return;
     }
 
-    // Clean search (remove punctuation)
-    $keyword_clean = preg_replace('/[^a-z0-9]/', '', $keyword);
+    $connection = \Drupal::database();
 
-    $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),' ',''))";
+    // Escape for LIKE
+    $keyword_sql = $connection->escapeLike($keyword);
 
-    // Remove default title filter
+    // Remove punctuation for normalized search
+    $keyword_clean = preg_replace('/[^a-z0-9]/', '', $keyword_sql);
+
+    $exact = $keyword_clean;
+    $start = $keyword_clean . '%';
+    $title = '%' . $keyword_sql . '%';
+
+    // Remove default title filter from Views
     foreach ($query->where as $gid => $group) {
       foreach ($group['conditions'] as $cid => $condition) {
         if (!empty($condition['field']) && $condition['field'] === 'node_field_data.title') {
@@ -245,10 +253,13 @@ if (
       }
     }
 
-    // FULLTEXT ranking
+    // Normalize title (remove dots, colon, spaces)
+    $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),' ',''))";
+
+    // FULLTEXT search
     $match = "MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE)";
 
-    // Search condition
+    // WHERE condition (safe placeholders)
     $query->addWhereExpression(
       0,
       "($match OR $title_clean LIKE :like_keyword)",
@@ -258,23 +269,18 @@ if (
       ]
     );
 
-    // Ranking CASE
+    // Ranking CASE (no placeholders here)
     $case = "
       CASE
-        WHEN $title_clean = :exact THEN 0
-        WHEN $title_clean LIKE :start THEN 1
-        WHEN node_field_data.title LIKE :title THEN 2
-        WHEN $match THEN 3
+        WHEN $title_clean = '$exact' THEN 0
+        WHEN $title_clean LIKE '$start' THEN 1
+        WHEN node_field_data.title LIKE '$title' THEN 2
+        WHEN MATCH(node_field_data.title) AGAINST ('$keyword_sql' IN NATURAL LANGUAGE MODE) THEN 3
         ELSE 4
       END
     ";
 
-    $query->addOrderBy(NULL, $case, 'ASC', 'search_rank', [
-      ':exact' => $keyword_clean,
-      ':start' => "$keyword_clean%",
-      ':title' => "%$keyword%"
-    ]);
-
+    $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
   }
 
  if ($view->id() == "detail_movie"){
