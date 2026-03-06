@@ -227,10 +227,11 @@ if($page > 25){
       : ($exposed['title_2'] ?? '');
 
     $keyword = strtolower(trim($keyword));
-
+    
     if (!$keyword) {
       return;
     }
+$keyword = preg_replace("/[^a-z0-9 ]/i", "", $keyword);
 
     $connection = \Drupal::database();
 
