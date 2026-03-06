@@ -242,7 +242,8 @@ if($page > 25){
 
     // Normalize words
     $keyword = str_replace("kgf", "k.g.f", $keyword);
-
+    // Escape quotes
+    $keyword = str_replace("'", "\\'", $keyword);
     // FULLTEXT condition
     $match = "MATCH(node_field_data.title) AGAINST ('$keyword' IN NATURAL LANGUAGE MODE)";
     $query->addWhereExpression(0, $match);
