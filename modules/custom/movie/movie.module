@@ -257,7 +257,7 @@ if (
     }
 
     // Normalize title (remove dots, colon, spaces)
-    $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),' ',''))";
+  //  $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),' ',''))";
 
     // FULLTEXT search
     $match = "MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE)";
@@ -265,7 +265,7 @@ if (
     // WHERE condition (safe placeholders)
     $query->addWhereExpression(
       0,
-      "($match OR $title_clean LIKE :like_keyword)",
+      "($match LIKE :like_keyword)",
       [
         ':keyword' => $keyword,
         ':like_keyword' => "%$keyword_clean%"
