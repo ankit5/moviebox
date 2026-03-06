@@ -214,7 +214,7 @@ if($page > 25){
  
 }
 
- if (
+if (
     ($view->current_display == 'page_2' || $view->current_display == 'rest_export_1') &&
     (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
   ) {
@@ -225,11 +225,16 @@ if($page > 25){
       ? $exposed['query']
       : ($exposed['title_2'] ?? '');
 
-    $keyword = trim(strtolower($keyword));
+    $keyword = strtolower(trim($keyword));
 
     if (!$keyword) {
       return;
     }
+
+    // Clean search (remove punctuation)
+    $keyword_clean = preg_replace('/[^a-z0-9]/', '', $keyword);
+
+    $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),' ',''))";
 
     // Remove default title filter
     foreach ($query->where as $gid => $group) {
@@ -240,16 +245,35 @@ if($page > 25){
       }
     }
 
-    // Normalize words
-    $keyword = str_replace("kgf", "k.g.f", $keyword);
-    // Escape quotes
-    $keyword = str_replace("'", "\\'", $keyword);
-    // FULLTEXT condition
-    $match = "MATCH(node_field_data.title) AGAINST ('$keyword' IN NATURAL LANGUAGE MODE)";
-    $query->addWhereExpression(0, $match);
+    // FULLTEXT ranking
+    $match = "MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE)";
 
-    // Ranking
-    $query->addOrderBy(NULL, $match, 'DESC', 'search_rank');
+    // Search condition
+    $query->addWhereExpression(
+      0,
+      "($match OR $title_clean LIKE :like_keyword)",
+      [
+        ':keyword' => $keyword,
+        ':like_keyword' => "%$keyword_clean%"
+      ]
+    );
+
+    // Ranking CASE
+    $case = "
+      CASE
+        WHEN $title_clean = :exact THEN 0
+        WHEN $title_clean LIKE :start THEN 1
+        WHEN node_field_data.title LIKE :title THEN 2
+        WHEN $match THEN 3
+        ELSE 4
+      END
+    ";
+
+    $query->addOrderBy(NULL, $case, 'ASC', 'search_rank', [
+      ':exact' => $keyword_clean,
+      ':start' => "$keyword_clean%",
+      ':title' => "%$keyword%"
+    ]);
 
   }
 
