@@ -237,6 +237,9 @@ if (
     // Escape for LIKE
     $keyword_sql = $connection->escapeLike($keyword);
 
+    // Escape SQL quotes
+    $keyword_sql = str_replace("'", "''", $keyword);
+
     // Remove punctuation for normalized search
     $keyword_clean = preg_replace('/[^a-z0-9]/', '', $keyword_sql);
 
