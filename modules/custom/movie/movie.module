@@ -242,6 +242,19 @@ $keyword = preg_replace("/[^a-z0-9 ]/i", "", $keyword);
     // Normalize keyword
     $keyword_clean = preg_replace('/[^a-z0-9]/', '', $keyword);
 
+// Split keyword into words
+$words = preg_split('/\s+/', $keyword);
+
+$word_conditions = [];
+foreach ($words as $word) {
+  $word = $connection->escapeLike($word);
+  if ($word) {
+    $word_conditions[] = "node_field_data.title LIKE '%$word%'";
+  }
+}
+
+$word_sql = implode(" AND ", $word_conditions);
+
     $exact = $keyword_clean;
     $start = $keyword_clean . '%';
     $title = '%' . $keyword_like . '%';
@@ -264,14 +277,14 @@ $keyword = preg_replace("/[^a-z0-9 ]/i", "", $keyword);
     // Fuzzy fallback (typo tolerance)
     $soundex = "SOUNDEX(node_field_data.title) = SOUNDEX(:keyword)";
 
-    $query->addWhereExpression(
-      0,
-      "($fulltext OR $title_clean LIKE :like_keyword OR $soundex)",
-      [
-        ':keyword' => $keyword,
-        ':like_keyword' => "%$keyword_clean%"
-      ]
-    );
+   $query->addWhereExpression(
+  0,
+  "($fulltext OR $title_clean LIKE :like_keyword OR $soundex OR ($word_sql))",
+  [
+    ':keyword' => $keyword,
+    ':like_keyword' => "%$keyword_clean%"
+  ]
+);
 
     // Ranking
     $case = "
