@@ -96,11 +96,12 @@ function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
 
 function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) { 
 
-if ($view->id() === 'api' && $view->current_display === 'rest_export_1') {
+ if ($view->id() === 'api' && $view->current_display === 'rest_export_1') {
+    $alias = $query->ensureTable('node__field_releasedate');
+    $now = gmdate('Y-m-d\TH:i:s');
 
- $query->addWhere(0, "node__field_releasedate.field_releasedate_value", NOW(), "<=");
+    $query->addWhere(0, "$alias.field_releasedate_value", $now, '<=');
   }
-
 
  if ($view->id() == "api_search") {
  $exposed_input = $view->exposed_raw_input;
