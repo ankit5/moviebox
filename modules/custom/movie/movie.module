@@ -96,6 +96,13 @@ function movie_views_pre_render(Drupal\views\ViewExecutable $view) {
 
 function movie_views_query_alter(Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) { 
 
+if ($view->id() === 'api' && $view->current_display === 'rest_export_1') {
+    $query->addWhereExpression(
+      0,
+      "node__field_releasedate.field_releasedate_value <= UTC_TIMESTAMP()"
+    );
+  }
+
 
  if ($view->id() == "api_search") {
  $exposed_input = $view->exposed_raw_input;
