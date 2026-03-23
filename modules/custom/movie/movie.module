@@ -238,7 +238,7 @@ if (
 
   // Remove slash/backslash only from start/end.
   $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
-
+  $keyword = preg_replace('/[;]+/u', '', $keyword);
   if ($keyword === '') {
     return;
   }
