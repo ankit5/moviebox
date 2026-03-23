@@ -232,12 +232,20 @@ if (
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
- $keyword = trim(mb_strtolower($keyword));
-$keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
+
+  $keyword = trim(mb_strtolower($keyword));
+
+  // Remove control chars.
+  $keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
+
+  // Remove trailing slashes and backslashes only from ends.
+  $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
 
   if ($keyword === '') {
     return;
   }
+
+
 
   $connection = \Drupal::database();
 
