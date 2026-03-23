@@ -241,32 +241,32 @@ if (
 
   $connection = \Drupal::database();
 
-  // Keep original keyword for multilingual search.
   $keyword_like = $connection->escapeLike($keyword);
-
-  // Normalized keyword only for exact/start matching.
   $keyword_clean = preg_replace('/[^\p{L}\p{N}]+/u', '', $keyword);
-
   if ($keyword_clean === '') {
     $keyword_clean = $keyword;
   }
 
-  // Split keyword into words safely.
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
   $word_conditions = [];
   $word_args = [];
-  foreach ($words as $index => $word) {
-    $placeholder = ':word_' . $index;
-    $word_conditions[] = "LOWER(node_field_data.title) LIKE $placeholder";
-    $word_args[$placeholder] = '%' . $connection->escapeLike(mb_strtolower($word)) . '%';
+
+  foreach ($words as $i => $word) {
+    if ($word !== '') {
+      $placeholder = ':word_' . $i;
+      $word_conditions[] = "LOWER(node_field_data.title) LIKE $placeholder";
+      $word_args[$placeholder] = '%' . $connection->escapeLike(mb_strtolower($word)) . '%';
+    }
   }
 
-  // Remove default Views title filter.
+  // Remove Views default title filter.
   foreach ($query->where as $gid => $group) {
-    foreach ($group['conditions'] as $cid => $condition) {
-      if (!empty($condition['field']) && $condition['field'] === 'node_field_data.title') {
-        unset($query->where[$gid]['conditions'][$cid]);
+    if (!empty($group['conditions'])) {
+      foreach ($group['conditions'] as $cid => $condition) {
+        if (!empty($condition['field']) && $condition['field'] === 'node_field_data.title') {
+          unset($query->where[$gid]['conditions'][$cid]);
+        }
       }
     }
   }
@@ -275,49 +275,44 @@ if (
   $fulltext = "MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE)";
   $soundex = "SOUNDEX(node_field_data.title) = SOUNDEX(:keyword)";
 
-  $or_parts = [
+  $conditions = [
     $fulltext,
     "$title_clean LIKE :like_keyword",
     $soundex,
   ];
 
   if (!empty($word_conditions)) {
-    $or_parts[] = '(' . implode(' AND ', $word_conditions) . ')';
+    $conditions[] = '(' . implode(' AND ', $word_conditions) . ')';
   }
 
-  $where_expression = '(' . implode(' OR ', $or_parts) . ')';
+  $query->addWhereExpression(
+    0,
+    '(' . implode(' OR ', $conditions) . ')',
+    [
+      ':keyword' => $keyword,
+      ':like_keyword' => '%' . $keyword_clean . '%',
+    ] + $word_args
+  );
 
-  $args = [
-    ':keyword' => $keyword,
-    ':like_keyword' => '%' . $keyword_clean . '%',
-  ] + $word_args;
-
-  $query->addWhereExpression(0, $where_expression, $args);
-
-  // Safe ranking values.
-  $exact = $connection->escapeLike($keyword_clean);
-  $start = $connection->escapeLike($keyword_clean) . '%';
-  $title = '%' . $connection->escapeLike($keyword) . '%';
+  // Escape values for ORDER BY CASE.
+  $exact_sql = str_replace("'", "''", $keyword_clean);
+  $start_sql = str_replace("'", "''", $keyword_clean) . '%';
+  $title_sql = '%' . str_replace("'", "''", $keyword_like) . '%';
+  $keyword_sql = str_replace("'", "''", $keyword);
 
   $case = "
     CASE
-      WHEN $title_clean = :rank_exact THEN 0
-      WHEN $title_clean LIKE :rank_start THEN 1
-      WHEN LOWER(node_field_data.title) LIKE :rank_title THEN 2
-      WHEN $soundex THEN 3
-      WHEN MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE) THEN 4
+      WHEN $title_clean = '$exact_sql' THEN 0
+      WHEN $title_clean LIKE '$start_sql' THEN 1
+      WHEN LOWER(node_field_data.title) LIKE '$title_sql' THEN 2
+      WHEN SOUNDEX(node_field_data.title) = SOUNDEX('$keyword_sql') THEN 3
+      WHEN MATCH(node_field_data.title) AGAINST ('$keyword_sql' IN NATURAL LANGUAGE MODE) THEN 4
       ELSE 5
     END
   ";
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
-  $query->addExpression($case, 'search_rank_expr');
-
-  $query->arguments()[':rank_exact'] = $keyword_clean;
-  $query->arguments()[':rank_start'] = $start;
-  $query->arguments()[':rank_title'] = mb_strtolower($title);
 }
-
 /////////////////////////////
 
 
