@@ -215,7 +215,7 @@ $filter_value = str_replace("'", "\'", $filter_value);
  
  if ($view->id() == "api"){
   $page = \Drupal::request()->get('page');
-if($page > 25){
+if($page > 38){
  throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
  }
  
