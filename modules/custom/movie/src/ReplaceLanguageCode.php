@@ -102,6 +102,9 @@ public static function replaceLangcode3($nid, &$context){
 
   public static function replaceLangcode($nid, &$context){
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    if (!$node) {
+    return true;
+    }
     $message = 'Replacing langcode(und to de)...';
     $results = array();
      // $message2 = getmoviebox_detail_session_old($node->field_detailpath->value,$node->field_subjectid->value);
