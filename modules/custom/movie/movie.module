@@ -232,7 +232,7 @@ if (
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
-
+ $keyword = str_replace(";", "", $keyword);
   $keyword = trim(mb_strtolower($keyword));
 
   if ($keyword === '') {
