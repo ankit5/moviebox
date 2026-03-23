@@ -232,8 +232,8 @@ if (
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
- $keyword = str_replace(";", "", $keyword);
-  $keyword = trim(mb_strtolower($keyword));
+ $keyword = trim(mb_strtolower($keyword));
+$keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
 
   if ($keyword === '') {
     return;
