@@ -40,14 +40,35 @@ class AutocompleteController extends ControllerBase {
           'value' => '&channelId=1&country=India&perPage=28&sort=Latest',
           'label' => '&channelId=1&country=India&perPage=28&sort=Latest',
         ];
-        $results[2] = [
-          'value' => '&channelId=1&classify=Hindi dub&perPage=28&sort=Latest',
-          'label' => '&channelId=1&classify=Hindi dub&perPage=28&sort=Latest',
-        ];
-        $results[3] = [
+       $results[2] = [
           'value' => '&keyword=You&perPage=28',
           'label' => '&keyword=You&perPage=28',
         ];
+        $results[3] = [
+          'value' => '&channelId=1&classify=Hindi+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Hindi+dub&perPage=28&sort=Latest',
+        ];
+        $results[4] = [
+          'value' => '&channelId=1&classify=Tamil+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Tamil+dub&perPage=28&sort=Latest',
+        ];
+        $results[5] = [
+          'value' => '&channelId=1&classify=Telugu+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Telugu+dub&perPage=28&sort=Latest',
+        ];
+        $results[6] = [
+          'value' => '&channelId=1&classify=Kannada+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Kannada+dub&perPage=28&sort=Latest',
+        ];
+        $results[7] = [
+          'value' => '&channelId=1&classify=Malayalam+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Malayalam+dub&perPage=28&sort=Latest',
+        ];
+        $results[8] = [
+          'value' => '&channelId=1&classify=Punjabi+dub&perPage=28&sort=Latest',
+          'label' => '&channelId=1&classify=Punjabi+dub&perPage=28&sort=Latest',
+        ];
+        
     }
 
     return new JsonResponse($results);
