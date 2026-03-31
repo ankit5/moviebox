@@ -64,6 +64,7 @@ class CustomTwigExtension extends AbstractExtension {
       new TwigFunction('entity_load_uuid', [$this, 'entityLoadUuid']),
       new TwigFunction('city_value', [$this, 'cityValue']),
       new TwigFunction('base64_encode', [$this, 'base64_encode']),
+      new TwigFunction('encryptData', [$this, 'encryptData']),
       new TwigFunction('ba', [$this, 'basedecode']),
       new TwigFunction('parse_url_remove', [$this, 'parse_url_remove']),
       new TwigFunction('slug', [$this, 'slug']),
@@ -213,6 +214,19 @@ public function base64_encode($string) {
 
   return base64_encode($string);
 
+}
+public function encryptData($data, $secretKey) {
+    $method = "AES-256-CBC";
+
+    // Create a 32-byte key
+    $key = hash('sha256', $secretKey);
+
+    // Create a 16-byte IV
+    $iv = substr(hash('sha256', $secretKey . 'iv'), 0, 16);
+
+    $encrypted = openssl_encrypt($data, $method, $key, 0, $iv);
+
+    return base64_encode($encrypted);
 }
   /**
    * Entity load by nid.
