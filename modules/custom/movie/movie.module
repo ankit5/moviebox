@@ -233,111 +233,113 @@ if (
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
- $keyword = urldecode($keyword);
+  // ✅ FIX 1: Decode URL (VERY IMPORTANT)
+  $keyword = urldecode($keyword);
 
+  // Normalize
   $keyword = trim(mb_strtolower($keyword));
   $keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
-
-  // Remove slash/backslash only from start/end.
   $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
   $keyword = preg_replace('/[;]+/u', '', $keyword);
+
   if ($keyword === '') {
     return;
   }
 
   $connection = \Drupal::database();
 
-  $keyword_like = $connection->escapeLike($keyword);
-
+  // Clean version (no spaces/special chars)
   $keyword_clean = preg_replace('/[^\p{L}\p{N}]+/u', '', $keyword);
-  if ($keyword_clean === '') {
-    $keyword_clean = $keyword;
-  }
 
+  // Split words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
+  // ✅ Remove useless words like "movie"
+  $stop_words = ['movie', 'full', 'hd', 'film'];
+  $filtered_words = [];
+
+  foreach ($words as $word) {
+    if (!in_array($word, $stop_words)) {
+      $filtered_words[] = $word;
+    }
+  }
+
+  // Fallback if all removed
+  if (empty($filtered_words)) {
+    $filtered_words = $words;
+  }
+
+  // Build LIKE conditions
   $word_conditions = [];
   $word_args = [];
 
-  foreach ($words as $i => $word) {
-    $word = trim(mb_strtolower($word), " \t\n\r\0\x0B\\/");
-
-    if ($word === '') {
-      continue;
-    }
-
+  foreach ($filtered_words as $i => $word) {
     $placeholder = ':word_' . $i;
     $word_conditions[] = "LOWER(node_field_data.title) LIKE $placeholder";
     $word_args[$placeholder] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  // Remove default Views title filters.
+  // ✅ Remove default Views title filters
   if (!empty($query->where) && is_array($query->where)) {
     foreach ($query->where as $gid => $group) {
-      if (empty($group['conditions']) || !is_array($group['conditions'])) {
-        continue;
-      }
+      if (empty($group['conditions'])) continue;
 
       foreach ($group['conditions'] as $cid => $condition) {
-        if (!empty($condition['field']) && is_string($condition['field'])) {
-          if (
-            $condition['field'] === 'node_field_data.title' ||
-            str_contains($condition['field'], '.title')
-          ) {
-            unset($query->where[$gid]['conditions'][$cid]);
-          }
+        if (!empty($condition['field']) && str_contains($condition['field'], 'title')) {
+          unset($query->where[$gid]['conditions'][$cid]);
         }
       }
 
-      if (isset($query->where[$gid]['conditions']) && is_array($query->where[$gid]['conditions'])) {
+      if (!empty($query->where[$gid]['conditions'])) {
         $query->where[$gid]['conditions'] = array_values($query->where[$gid]['conditions']);
       }
     }
   }
 
+  // Clean title field (remove symbols)
   $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),'-',''),' ',''))";
-  $fulltext = "MATCH(node_field_data.title) AGAINST (:keyword IN NATURAL LANGUAGE MODE)";
-  $soundex = "SOUNDEX(node_field_data.title) = SOUNDEX(:keyword)";
 
-  $conditions = [
-    $fulltext,
-    "$title_clean LIKE :like_keyword",
-    $soundex,
-  ];
+  // ✅ FINAL CONDITIONS (SIMPLIFIED & WORKING)
+  $conditions = [];
 
+  // Match cleaned keyword
+  if (!empty($keyword_clean)) {
+    $conditions[] = "$title_clean LIKE :clean_match";
+  }
+
+  // Match words (OR, not AND)
   if (!empty($word_conditions)) {
     $conditions[] = '(' . implode(' OR ', $word_conditions) . ')';
   }
+
+  // Fallback full title match
+  $conditions[] = "LOWER(node_field_data.title) LIKE :full_match";
 
   $query->addWhereExpression(
     0,
     '(' . implode(' OR ', $conditions) . ')',
     [
-      ':keyword' => $keyword,
-      ':like_keyword' => '%' . $keyword_clean . '%',
+      ':clean_match' => '%' . $keyword_clean . '%',
+      ':full_match' => '%' . $connection->escapeLike($keyword) . '%',
     ] + $word_args
   );
 
-  // Safely quote values for ORDER BY CASE.
+  // ✅ SMART ORDERING (NO FULLTEXT / NO SOUNDEX)
   $case_exact = $connection->quote($keyword_clean);
   $case_start = $connection->quote($keyword_clean . '%');
-  $case_title = $connection->quote('%' . $keyword_like . '%');
-  $case_keyword = $connection->quote($keyword);
+  $case_word = $connection->quote('%' . $connection->escapeLike($filtered_words[0]) . '%');
 
   $case = "
     CASE
       WHEN $title_clean = $case_exact THEN 0
       WHEN $title_clean LIKE $case_start THEN 1
-      WHEN LOWER(node_field_data.title) LIKE $case_title THEN 2
-      WHEN SOUNDEX(node_field_data.title) = SOUNDEX($case_keyword) THEN 3
-      WHEN MATCH(node_field_data.title) AGAINST ($case_keyword IN NATURAL LANGUAGE MODE) THEN 4
-      ELSE 5
+      WHEN LOWER(node_field_data.title) LIKE $case_word THEN 2
+      ELSE 3
     END
   ";
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 }
-
 /////////////////////////////
 
 
