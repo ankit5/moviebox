@@ -250,9 +250,7 @@ if (
 
   // Clean version (no spaces/special chars)
   $keyword_clean = preg_replace('/[^\p{L}\p{N}]+/u', '', $keyword);
-$keyword_clean = preg_replace('/[^\p{L}\p{N} ]+/u', '', $keyword);
-$keyword_clean = preg_replace('/\s+/', ' ', $keyword_clean);
-$keyword_clean = trim($keyword_clean);
+
 
   // Split words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
