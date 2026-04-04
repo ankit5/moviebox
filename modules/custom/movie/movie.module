@@ -233,6 +233,8 @@ if (
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
+ $keyword = urldecode($keyword);
+
   $keyword = trim(mb_strtolower($keyword));
   $keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
 
@@ -304,7 +306,7 @@ if (
   ];
 
   if (!empty($word_conditions)) {
-    $conditions[] = '(' . implode(' AND ', $word_conditions) . ')';
+    $conditions[] = '(' . implode(' OR ', $word_conditions) . ')';
   }
 
   $query->addWhereExpression(
