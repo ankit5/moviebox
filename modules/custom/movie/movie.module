@@ -246,6 +246,10 @@ if (
   $keyword = preg_replace('/\bhindi\b/u', '[Hindi]', $keyword);
   $keyword = preg_replace('/\btamil\b/u', '[Tamil]', $keyword);
 
+// ✅ Special keyword normalization
+$keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
+$keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
+
   if ($keyword === '') {
     return;
   }
