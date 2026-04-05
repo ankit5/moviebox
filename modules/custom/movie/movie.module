@@ -297,7 +297,8 @@ if (
   }
 
   // Clean title field (remove symbols)
-  $title_clean = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(node_field_data.title,'.',''),':',''),'-',''),' ',''))";
+
+$title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[\\[\\].:\\- ]', ''))";
 
   // ✅ FINAL CONDITIONS (SIMPLIFIED & WORKING)
   $conditions = [];
