@@ -233,14 +233,18 @@ if (
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
-  // ✅ FIX 1: Decode URL (VERY IMPORTANT)
+  // ✅ Decode URL
   $keyword = urldecode($keyword);
 
-  // Normalize
+  // ✅ Normalize
   $keyword = trim(mb_strtolower($keyword));
   $keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
   $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
   $keyword = preg_replace('/[;]+/u', '', $keyword);
+
+  // ✅ Language tagging
+  $keyword = preg_replace('/\bhindi\b/u', '[Hindi]', $keyword);
+  $keyword = preg_replace('/\btamil\b/u', '[Tamil]', $keyword);
 
   if ($keyword === '') {
     return;
@@ -248,13 +252,13 @@ if (
 
   $connection = \Drupal::database();
 
-  // Clean version (no spaces/special chars)
-  $keyword_clean = preg_replace('/[^\p{L}\p{N}]+/u', '', $keyword);
+  // ✅ Clean keyword (ALLOW [ ])
+  $keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]]+/u', '', $keyword);
 
-  // Split words
+  // ✅ Split words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
-  // ✅ Remove useless words like "movie"
+  // ✅ Remove useless words
   $stop_words = ['movie', 'full', 'hd', 'film'];
   $filtered_words = [];
 
@@ -264,12 +268,11 @@ if (
     }
   }
 
-  // Fallback if all removed
   if (empty($filtered_words)) {
     $filtered_words = $words;
   }
 
-  // Build LIKE conditions
+  // ✅ Build LIKE conditions
   $word_conditions = [];
   $word_args = [];
 
@@ -296,25 +299,32 @@ if (
     }
   }
 
-  // Clean title field (remove symbols)
+  // ✅ Clean title (KEEP [ ])
+  $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[.:\\- ]', ''))";
 
-$title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[\\[\\].:\\- ]', ''))";
+  // ✅ Language normalized title (extra boost)
+  $title_lang = "
+    LOWER(
+      REPLACE(
+        REPLACE(node_field_data.title, 'hindi', '[Hindi]'),
+        'tamil', '[Tamil]'
+      )
+    )
+  ";
 
-  // ✅ FINAL CONDITIONS (SIMPLIFIED & WORKING)
+  // ✅ FINAL CONDITIONS
   $conditions = [];
 
-  // Match cleaned keyword
   if (!empty($keyword_clean)) {
     $conditions[] = "$title_clean LIKE :clean_match";
   }
 
-  // Match words (OR, not AND)
   if (!empty($word_conditions)) {
     $conditions[] = '(' . implode(' OR ', $word_conditions) . ')';
   }
 
-  // Fallback full title match
   $conditions[] = "LOWER(node_field_data.title) LIKE :full_match";
+  $conditions[] = "$title_lang LIKE :lang_match";
 
   $query->addWhereExpression(
     0,
@@ -322,10 +332,11 @@ $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[\\[\\].:\\- ]', ''
     [
       ':clean_match' => '%' . $keyword_clean . '%',
       ':full_match' => '%' . $connection->escapeLike($keyword) . '%',
+      ':lang_match' => '%' . $connection->escapeLike($keyword) . '%',
     ] + $word_args
   );
 
-  // ✅ SMART ORDERING (NO FULLTEXT / NO SOUNDEX)
+  // ✅ SMART ORDERING
   $case_exact = $connection->quote($keyword_clean);
   $case_start = $connection->quote($keyword_clean . '%');
   $case_word = $connection->quote('%' . $connection->escapeLike($filtered_words[0]) . '%');
@@ -335,12 +346,14 @@ $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[\\[\\].:\\- ]', ''
       WHEN $title_clean = $case_exact THEN 0
       WHEN $title_clean LIKE $case_start THEN 1
       WHEN LOWER(node_field_data.title) LIKE $case_word THEN 2
-      ELSE 3
+      WHEN $title_lang LIKE " . $connection->quote('%' . $keyword . '%') . " THEN 3
+      ELSE 4
     END
   ";
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 }
+
 /////////////////////////////
 
 
