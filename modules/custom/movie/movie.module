@@ -304,7 +304,7 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
   }
 
   // ✅ Clean title (KEEP [ ])
-  $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[.:\\- ]', ''))";
+  $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[:\\- ]', ''))";
 
   // ✅ Language normalized title (extra boost)
   $title_lang = "
