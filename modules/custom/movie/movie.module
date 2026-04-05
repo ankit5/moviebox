@@ -257,7 +257,7 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
   $connection = \Drupal::database();
 
   // ✅ Clean keyword (ALLOW [ ])
-  $keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]]+/u', '', $keyword);
+  $keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]\.]+/u', '', $keyword);
 
   // ✅ Split words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
