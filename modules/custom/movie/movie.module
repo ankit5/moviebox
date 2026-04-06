@@ -373,20 +373,19 @@ if (
   // ✅ FINAL RANKING
   $case = "
     CASE
-
-       -- 🎯 NORMAL MATCH
-      WHEN $title_lower LIKE $case_full THEN 0
-
-     -- 🎯 EXACT MATCH (TOP)
-      WHEN $title_clean = $case_exact THEN 1
-
+      -- 🎯 EXACT MATCH (TOP)
+      WHEN $title_clean = $case_exact THEN 0
+       
       -- 🎯 LANGUAGE BOOST
-      WHEN $lang_condition AND $title_clean = $case_exact THEN 2
-      WHEN $lang_condition AND $title_clean LIKE $case_start THEN 3
-      WHEN $lang_condition AND $title_lower LIKE $case_phrase THEN 4
+      WHEN $lang_condition AND $title_clean = $case_exact THEN 1
+      WHEN $lang_condition AND $title_clean LIKE $case_start THEN 2
+      WHEN $lang_condition AND $title_lower LIKE $case_phrase THEN 3
 
       -- 🎯 STARTS WITH
-      WHEN $title_clean LIKE $case_start THEN 5
+      WHEN $title_clean LIKE $case_start THEN 4
+
+      -- 🎯 NORMAL MATCH
+      WHEN $title_lower LIKE $case_full THEN 5
 
       -- 🎯 STRONG MATCH
       WHEN $title_lower LIKE $case_phrase THEN 6
