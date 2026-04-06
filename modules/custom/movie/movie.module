@@ -258,7 +258,12 @@ if (
   $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
   $keyword = preg_replace('/[;]+/u', '', $keyword);
 
- 
+  // ✅ Language tagging
+  $keyword = preg_replace('/\bhindi\b/u', '[hindi]', $keyword);
+  $keyword = preg_replace('/\btamil\b/u', '[tamil]', $keyword);
+  $keyword = preg_replace('/\benglish\b/u', '[english]', $keyword);
+  $keyword = preg_replace('/\btelugu\b/u', '[telugu]', $keyword);
+  $keyword = preg_replace('/\bkannada\b/u', '[kannada]', $keyword);
 
   // ✅ Special normalization
   $keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
@@ -270,20 +275,21 @@ if (
 
   $connection = \Drupal::database();
 
-  // ✅ FAST CLEAN KEYWORD (NO REGEX)
+  // ✅ FAST CLEAN KEYWORD
   $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', $keyword);
 
-  // ✅ Words
+  // ✅ WORD SPLIT
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
+  // ✅ REMOVE STOP WORDS
   $stop_words = ['movie', 'full', 'hd', 'film'];
   $filtered_words = array_values(array_diff($words, $stop_words));
   if (empty($filtered_words)) {
     $filtered_words = $words;
   }
 
-  // ✅ SQL helpers (NO LOWER, NO REGEX)
-  $title_lower = "node_field_data.title";
+  // ✅ SQL helpers
+  $title = "node_field_data.title";
 
   $title_clean = "
     REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
@@ -295,108 +301,71 @@ if (
     ']', '')
   ";
 
-  // ✅ LIKE conditions
-  $word_conditions = [];
-  $word_args = [];
+  // ✅ WHERE: FORCE ALL WORDS MATCH (IMPORTANT)
+  $and_conditions = [];
+  $args = [];
 
   foreach ($filtered_words as $i => $word) {
     $ph = ':w' . $i;
-    $word_conditions[] = "$title_lower LIKE $ph";
-    $word_args[$ph] = '%' . $connection->escapeLike($word) . '%';
+    $and_conditions[] = "$title LIKE $ph";
+    $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
-
-  // ✅ TYPO MATCH
-  $soundex_conditions = [];
-  foreach ($filtered_words as $i => $word) {
-    $ph = ':sx' . $i;
-    $soundex_conditions[] = "SOUNDEX($title_lower) = SOUNDEX($ph)";
-    $word_args[$ph] = $word;
-  }
-
-  // ✅ WHERE CONDITIONS
-  $conditions = [];
-
-  if (!empty($keyword_clean)) {
-    $conditions[] = "$title_clean LIKE :clean_match";
-  }
-
-  if (!empty($word_conditions)) {
-    $conditions[] = '(' . implode(' OR ', $word_conditions) . ')';
-  }
-
-  if (!empty($soundex_conditions)) {
-    $conditions[] = '(' . implode(' OR ', $soundex_conditions) . ')';
-  }
-
-  $conditions[] = "$title_lower LIKE :full_match";
 
   $query->addWhereExpression(
     0,
-    '(' . implode(' OR ', $conditions) . ')',
-    [
-      ':clean_match' => '%' . $keyword_clean . '%',
-      ':full_match' => '%' . $connection->escapeLike($keyword) . '%',
-    ] + $word_args
+    '(' . implode(' AND ', $and_conditions) . ')',
+    $args
   );
 
   // ✅ LANGUAGE DETECTION
-  $is_hindi   = str_contains($keyword, '[hindi]');
-  $is_tamil   = str_contains($keyword, '[tamil]');
-  $is_telugu  = str_contains($keyword, '[telugu]');
-  $is_kannada = str_contains($keyword, '[kannada]');
   $is_english = str_contains($keyword, '[english]');
+  $is_hindi   = str_contains($keyword, '[hindi]');
 
-  // ✅ LANGUAGE CONDITION
-  $lang_condition = "1=0";
+  $lang_boost = "0";
 
-  if ($is_hindi) {
-    $lang_condition = "$title_lower LIKE '%[hindi]%'";
-  } elseif ($is_tamil) {
-    $lang_condition = "$title_lower LIKE '%[tamil]%'";
-  } elseif ($is_telugu) {
-    $lang_condition = "$title_lower LIKE '%[telugu]%'";
-  } elseif ($is_kannada) {
-    $lang_condition = "$title_lower LIKE '%[kannada]%'";
-  } elseif ($is_english) {
-    $lang_condition = "$title_lower LIKE '%[english]%' OR $title_lower NOT LIKE '%[hindi]%'";
+  if ($is_english) {
+    $lang_boost = "$title LIKE '%[english]%'";
+  } elseif ($is_hindi) {
+    $lang_boost = "$title LIKE '%[hindi]%'";
   }
 
-  // ✅ Ranking values
-  $case_exact = $connection->quote($keyword_clean);
-  $case_start = $connection->quote($keyword_clean . '%');
-  $case_full  = $connection->quote('%' . $keyword . '%');
-  $case_phrase= $connection->quote('%' . str_replace(' ', '%', $keyword) . '%');
+  // ✅ CASE VALUES
+  $case_exact   = $connection->quote($keyword_clean);
+  $case_start   = $connection->quote($keyword_clean . '%');
+  $case_phrase  = $connection->quote('%' . implode('%', $filtered_words) . '%');
+  $case_full    = $connection->quote('%' . $keyword . '%');
+  $case_soundex = $connection->quote($keyword);
 
   $first_word = $filtered_words[0] ?? '';
   $case_word  = $connection->quote('%' . $connection->escapeLike($first_word) . '%');
 
-  // ✅ FINAL RANKING
+  // ✅ FINAL RANKING V2
   $case = "
     CASE
-      -- 🎯 EXACT MATCH (TOP)
+
+      -- 🥇 PERFECT CLEAN MATCH
       WHEN $title_clean = $case_exact THEN 0
-       
-      -- 🎯 LANGUAGE BOOST
-      WHEN $lang_condition AND $title_clean = $case_exact THEN 1
-      WHEN $lang_condition AND $title_clean LIKE $case_start THEN 2
-      WHEN $lang_condition AND $title_lower LIKE $case_phrase THEN 3
 
-      -- 🎯 STARTS WITH
-      WHEN $title_clean LIKE $case_start THEN 4
+      -- 🥈 STARTS WITH CLEAN
+      WHEN $title_clean LIKE $case_start THEN 1
 
-      -- 🎯 NORMAL MATCH
-      WHEN $title_lower LIKE $case_full THEN 5
+      -- 🥉 LANGUAGE BOOST PERFECT
+      WHEN $lang_boost AND $title_clean = $case_exact THEN 2
 
-      -- 🎯 STRONG MATCH
-      WHEN $title_lower LIKE $case_phrase THEN 6
+      -- ⭐ ALL WORDS MATCH (STRICT)
+      WHEN " . implode(' AND ', array_map(fn($w) => "$title LIKE '%$w%'", $filtered_words)) . " THEN 3
 
-     
+      -- ⭐ FLEXIBLE PHRASE
+      WHEN $title LIKE $case_phrase THEN 4
 
-      -- 🎯 SINGLE WORD
-      WHEN $title_lower LIKE $case_word THEN 7
+      -- ⭐ FULL STRING
+      WHEN $title LIKE $case_full THEN 5
 
-      -- 🎯 TYPO
-      WHEN SOUNDEX($title_lower) = SOUNDEX($case_exact) THEN 8
+      -- ⭐ FIRST WORD
+      WHEN $title LIKE $case_word THEN 6
+
+      -- ⭐ TYPO
+      WHEN SOUNDEX($title) = SOUNDEX($case_soundex) THEN 7
 
       ELSE 10
     END
@@ -405,9 +374,8 @@ if (
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
   // ✅ Freshness boost
- // $query->addOrderBy('node_field_data', 'created', 'DESC');
+//  $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
-
 /////////////////////////////
 
 
