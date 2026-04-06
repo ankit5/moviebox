@@ -258,12 +258,7 @@ if (
   $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
   $keyword = preg_replace('/[;]+/u', '', $keyword);
 
-  // ✅ Language tagging
-  $keyword = preg_replace('/\bhindi\b/u', '[hindi]', $keyword);
-  $keyword = preg_replace('/\btamil\b/u', '[tamil]', $keyword);
-  $keyword = preg_replace('/\benglish\b/u', '[english]', $keyword);
-  $keyword = preg_replace('/\btelugu\b/u', '[telugu]', $keyword);
-  $keyword = preg_replace('/\bkannada\b/u', '[kannada]', $keyword);
+ 
 
   // ✅ Special normalization
   $keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
