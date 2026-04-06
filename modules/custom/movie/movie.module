@@ -245,6 +245,9 @@ if (
   // ✅ Language tagging
   $keyword = preg_replace('/\bhindi\b/u', '[Hindi]', $keyword);
   $keyword = preg_replace('/\btamil\b/u', '[Tamil]', $keyword);
+$keyword = preg_replace('/\benglish\b/u', '[English]', $keyword);
+$keyword = preg_replace('/\btelugu\b/u', '[Telugu]', $keyword);
+$keyword = preg_replace('/\bkannada\b/u', '[kannada]', $keyword);
 
 // ✅ Special keyword normalization
 $keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
