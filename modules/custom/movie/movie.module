@@ -261,9 +261,8 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
 
   // ✅ Clean keyword (ALLOW [ ])
 // Step 1: Allow space in regex
-$keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]\. ]+/u', '', $keyword);
 
-// Step 2: Normalize multiple spaces → single space
+$keyword_clean = preg_replace("/[^\p{L}\p{N}\[\]\. ]+/u", '', str_replace("'", '', $keyword));
 $keyword_clean = preg_replace('/\s+/', ' ', $keyword_clean);
 
   // ✅ Split words
@@ -311,7 +310,7 @@ $keyword_clean = preg_replace('/\s+/', ' ', $keyword_clean);
   }
 
   // ✅ Clean title (KEEP [ ])
-  $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[:\\- ]', ''))";
+ $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[:\\-\\' ]', ''))";
 
   // ✅ Language normalized title (extra boost)
   $title_lang = "
