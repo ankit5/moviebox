@@ -275,14 +275,11 @@ if (
 
   $connection = \Drupal::database();
 
-  // ✅ Clean keyword
-  $keyword_clean = preg_replace("/[^\p{L}\p{N}\[\]\. ]+/u", '', str_replace("'", '', $keyword));
-  $keyword_clean = preg_replace('/\s+/', ' ', $keyword_clean);
-
-  $clean_no_space = str_replace(' ', '', $keyword_clean);
+  // ✅ FAST CLEAN KEYWORD (NO REGEX)
+  $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', $keyword);
 
   // ✅ Words
-  $words = preg_split('/\s+/u', $keyword_clean, -1, PREG_SPLIT_NO_EMPTY);
+  $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
   $stop_words = ['movie', 'full', 'hd', 'film'];
   $filtered_words = array_values(array_diff($words, $stop_words));
@@ -290,9 +287,18 @@ if (
     $filtered_words = $words;
   }
 
-  // ✅ SQL helpers (FIXED)
-  $title_clean = "LOWER(REGEXP_REPLACE(node_field_data.title, '[^a-z0-9]', ''))";
-  $title_lower = "LOWER(node_field_data.title)";
+  // ✅ SQL helpers (NO LOWER, NO REGEX)
+  $title_lower = "node_field_data.title";
+
+  $title_clean = "
+    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+      LOWER(node_field_data.title),
+    ' ', ''),
+    '-', ''),
+    ':', ''),
+    '[', ''),
+    ']', '')
+  ";
 
   // ✅ LIKE conditions
   $word_conditions = [];
@@ -333,8 +339,8 @@ if (
     0,
     '(' . implode(' OR ', $conditions) . ')',
     [
-      ':clean_match' => '%' . $clean_no_space . '%',
-      ':full_match' => '%' . $connection->escapeLike($keyword_clean) . '%',
+      ':clean_match' => '%' . $keyword_clean . '%',
+      ':full_match' => '%' . $connection->escapeLike($keyword) . '%',
     ] + $word_args
   );
 
@@ -345,7 +351,7 @@ if (
   $is_kannada = str_contains($keyword, '[kannada]');
   $is_english = str_contains($keyword, '[english]');
 
-  // ✅ LANGUAGE CONDITION (FIXED)
+  // ✅ LANGUAGE CONDITION
   $lang_condition = "1=0";
 
   if ($is_hindi) {
@@ -361,15 +367,15 @@ if (
   }
 
   // ✅ Ranking values
-  $case_exact = $connection->quote($clean_no_space);
-  $case_start = $connection->quote($clean_no_space . '%');
-  $case_full  = $connection->quote('%' . $keyword_clean . '%');
-  $case_phrase= $connection->quote('%' . str_replace(' ', '%', $keyword_clean) . '%');
+  $case_exact = $connection->quote($keyword_clean);
+  $case_start = $connection->quote($keyword_clean . '%');
+  $case_full  = $connection->quote('%' . $keyword . '%');
+  $case_phrase= $connection->quote('%' . str_replace(' ', '%', $keyword) . '%');
 
   $first_word = $filtered_words[0] ?? '';
   $case_word  = $connection->quote('%' . $connection->escapeLike($first_word) . '%');
 
-  // ✅ FINAL RANKING (FIXED)
+  // ✅ FINAL RANKING
   $case = "
     CASE
       -- 🎯 EXACT MATCH (TOP)
@@ -401,8 +407,8 @@ if (
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // ✅ Optional freshness boost
-//  $query->addOrderBy('node_field_data', 'created', 'DESC');
+  // ✅ Freshness boost
+ // $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
 
 /////////////////////////////
