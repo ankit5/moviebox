@@ -388,7 +388,7 @@ if (
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
   // ✅ Optional: latest content boost
-  $query->addOrderBy('node_field_data', 'created', 'DESC');
+//  $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
 
 /////////////////////////////
