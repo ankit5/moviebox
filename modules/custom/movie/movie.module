@@ -229,6 +229,25 @@ if (
 ) {
   $exposed = $view->exposed_raw_input;
 
+
+// ✅ Remove default Views title filters
+  if (!empty($query->where) && is_array($query->where)) {
+    foreach ($query->where as $gid => $group) {
+      if (empty($group['conditions'])) continue;
+
+      foreach ($group['conditions'] as $cid => $condition) {
+        if (!empty($condition['field']) && str_contains($condition['field'], 'title')) {
+          unset($query->where[$gid]['conditions'][$cid]);
+        }
+      }
+
+      if (!empty($query->where[$gid]['conditions'])) {
+        $query->where[$gid]['conditions'] = array_values($query->where[$gid]['conditions']);
+      }
+    }
+  }
+
+
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
