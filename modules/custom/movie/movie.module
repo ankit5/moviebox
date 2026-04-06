@@ -229,7 +229,6 @@ if (
 ) {
   $exposed = $view->exposed_raw_input;
 
-
 // ✅ Remove default Views title filters
   if (!empty($query->where) && is_array($query->where)) {
     foreach ($query->where as $gid => $group) {
@@ -246,7 +245,6 @@ if (
       }
     }
   }
-
 
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
@@ -266,7 +264,7 @@ if (
   $keyword = preg_replace('/\btelugu\b/u', '[telugu]', $keyword);
   $keyword = preg_replace('/\bkannada\b/u', '[kannada]', $keyword);
 
-  // ✅ Special normalize
+  // ✅ Special normalization
   $keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
   $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
 
@@ -337,28 +335,59 @@ if (
     ] + $word_args
   );
 
-  // ✅ SMART RANKING (Netflix-style)
+  // ✅ LANGUAGE DETECTION
+  $is_hindi  = str_contains($keyword, '[hindi]');
+  $is_tamil  = str_contains($keyword, '[tamil]');
+  $is_telugu = str_contains($keyword, '[telugu]');
+  $is_kannada= str_contains($keyword, '[kannada]');
+
+  $lang_condition = "0";
+
+  if ($is_hindi) {
+    $lang_condition = "LOWER(node_field_data.title) LIKE '%[hindi]%'";
+  } elseif ($is_tamil) {
+    $lang_condition = "LOWER(node_field_data.title) LIKE '%[tamil]%'";
+  } elseif ($is_telugu) {
+    $lang_condition = "LOWER(node_field_data.title) LIKE '%[telugu]%'";
+  } elseif ($is_kannada) {
+    $lang_condition = "LOWER(node_field_data.title) LIKE '%[kannada]%'";
+  }
+
+  // ✅ RANKING VALUES
   $case_exact = $connection->quote($keyword_clean);
   $case_start = $connection->quote($keyword_clean . '%');
-  $case_full = $connection->quote('%' . $keyword_clean . '%');
+  $case_full  = $connection->quote('%' . $keyword_clean . '%');
+  $case_phrase= $connection->quote('%' . str_replace(' ', '%', $keyword_clean) . '%');
 
   $first_word = $filtered_words[0] ?? '';
-  $case_word = $connection->quote('%' . $connection->escapeLike($first_word) . '%');
+  $case_word  = $connection->quote('%' . $connection->escapeLike($first_word) . '%');
 
+  // ✅ FINAL NETFLIX-STYLE RANKING
   $case = "
     CASE
-      WHEN $title_clean = $case_exact THEN 0
-      WHEN $title_clean LIKE $case_start THEN 1
-      WHEN $title_lower LIKE $case_full THEN 2
-      WHEN $title_lower LIKE $case_word THEN 3
-      WHEN SOUNDEX($title_lower) = SOUNDEX($case_exact) THEN 4
-      ELSE 5
+      -- 🎯 LANGUAGE BOOST (TOP PRIORITY)
+      WHEN $lang_condition AND $title_clean = $case_exact THEN 0
+      WHEN $lang_condition AND $title_clean LIKE $case_start THEN 1
+      WHEN $lang_condition AND $title_lower LIKE $case_phrase THEN 2
+      WHEN $lang_condition THEN 3
+
+      -- 🎯 NORMAL MATCHING
+      WHEN $title_clean = $case_exact THEN 4
+      WHEN $title_clean LIKE $case_start THEN 5
+      WHEN $title_lower LIKE $case_phrase THEN 6
+      WHEN $title_lower LIKE $case_full THEN 7
+      WHEN $title_lower LIKE $case_word THEN 8
+
+      -- 🎯 TYPO MATCH
+      WHEN SOUNDEX($title_lower) = SOUNDEX($case_exact) THEN 9
+
+      ELSE 10
     END
   ";
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // Optional boost recent content
+  // ✅ Optional: latest content boost
   $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
 
