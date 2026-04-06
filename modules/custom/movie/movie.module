@@ -260,7 +260,11 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
   $connection = \Drupal::database();
 
   // ✅ Clean keyword (ALLOW [ ])
-  $keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]\.]+/u', '', $keyword);
+// Step 1: Allow space in regex
+$keyword_clean = preg_replace('/[^\p{L}\p{N}\[\]\. ]+/u', '', $keyword);
+
+// Step 2: Normalize multiple spaces → single space
+$keyword_clean = preg_replace('/\s+/', ' ', $keyword_clean);
 
   // ✅ Split words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
