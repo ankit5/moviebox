@@ -350,11 +350,12 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
 
   $case = "
     CASE
-      WHEN $title_clean = '$keyword' THEN 0
-      WHEN $title_clean LIKE $case_start THEN 1
-      WHEN LOWER(node_field_data.title) LIKE $case_word THEN 2
+     WHEN node_field_data.sticky = '1' THEN 0
+      WHEN $title_clean = '$keyword' THEN 1
+      WHEN $title_clean LIKE $case_start THEN 2
+      WHEN LOWER(node_field_data.title) LIKE $case_word THEN 3
       WHEN $title_lang LIKE " . $connection->quote('%' . $keyword . '%') . " THEN 3
-      ELSE 4
+      ELSE 5
     END
   ";
 
