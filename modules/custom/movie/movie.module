@@ -360,7 +360,7 @@ $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
   ";
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
-$query->addOrderBy('node_field_data', 'sticky', 'DESC');
+//$query->addOrderBy('node_field_data', 'sticky', 'DESC');
 
 }
 
