@@ -246,28 +246,13 @@ if (
     }
   }
 
-  // ✅ Get keyword
+  // ✅ Keyword
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
-  // ✅ Normalize
   $keyword = urldecode($keyword);
   $keyword = trim(mb_strtolower($keyword));
-  $keyword = preg_replace('/[\x00-\x1F\x7F]/u', '', $keyword);
-  $keyword = trim($keyword, " \t\n\r\0\x0B\\/");
-  $keyword = preg_replace('/[;]+/u', '', $keyword);
-
-  // ✅ Language tagging
-  $keyword = preg_replace('/\bhindi\b/u', '[hindi]', $keyword);
-  $keyword = preg_replace('/\btamil\b/u', '[tamil]', $keyword);
-  $keyword = preg_replace('/\benglish\b/u', '[english]', $keyword);
-  $keyword = preg_replace('/\btelugu\b/u', '[telugu]', $keyword);
-  $keyword = preg_replace('/\bkannada\b/u', '[kannada]', $keyword);
-
-  // ✅ Special normalization
-  $keyword = preg_replace('/\bkgf\b/u', 'k.g.f', $keyword);
-  $keyword = preg_replace('/\bcid\b/u', 'c.i.d', $keyword);
 
   if ($keyword === '') {
     return;
@@ -275,18 +260,25 @@ if (
 
   $connection = \Drupal::database();
 
-  // ✅ FAST CLEAN KEYWORD
+  // ✅ Detect language (AUTO)
+  $languages = ['hindi', 'tamil', 'english', 'telugu', 'kannada'];
+  $detected_lang = '';
+
+  foreach ($languages as $lang) {
+    if (str_contains($keyword, $lang)) {
+      $detected_lang = $lang;
+      $keyword = str_replace($lang, '', $keyword);
+      break;
+    }
+  }
+
+  $keyword = trim($keyword);
+
+  // ✅ Clean keyword
   $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', $keyword);
 
-  // ✅ WORD SPLIT
+  // ✅ Words
   $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
-
-  // ✅ REMOVE STOP WORDS
-  $stop_words = ['movie', 'full', 'hd', 'film'];
-  $filtered_words = array_values(array_diff($words, $stop_words));
-  if (empty($filtered_words)) {
-    $filtered_words = $words;
-  }
 
   // ✅ SQL helpers
   $title = "node_field_data.title";
@@ -301,45 +293,38 @@ if (
     ']', '')
   ";
 
-  // ✅ WHERE: FORCE ALL WORDS MATCH (IMPORTANT)
-  $and_conditions = [];
+  // ✅ WHERE (SMART: ONLY MAIN WORDS)
+  $conditions = [];
   $args = [];
 
-  foreach ($filtered_words as $i => $word) {
+  foreach ($words as $i => $word) {
     $ph = ':w' . $i;
-    $and_conditions[] = "$title LIKE $ph";
+    $conditions[] = "$title LIKE $ph";
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  $query->addWhereExpression(
-    0,
-    '(' . implode(' AND ', $and_conditions) . ')',
-    $args
-  );
-
-  // ✅ LANGUAGE DETECTION
-  $is_english = str_contains($keyword, '[english]');
-  $is_hindi   = str_contains($keyword, '[hindi]');
-
-  $lang_boost = "0";
-
-  if ($is_english) {
-    $lang_boost = "$title LIKE '%[english]%'";
-  } elseif ($is_hindi) {
-    $lang_boost = "$title LIKE '%[hindi]%'";
+  // fallback: if no words (rare)
+  if (empty($conditions)) {
+    $conditions[] = "$title LIKE :fallback";
+    $args[':fallback'] = '%';
   }
 
-  // ✅ CASE VALUES
+  $query->addWhereExpression(0, '(' . implode(' AND ', $conditions) . ')', $args);
+
+  // ✅ CASE values
   $case_exact   = $connection->quote($keyword_clean);
   $case_start   = $connection->quote($keyword_clean . '%');
-  $case_phrase  = $connection->quote('%' . implode('%', $filtered_words) . '%');
+  $case_phrase  = $connection->quote('%' . implode('%', $words) . '%');
   $case_full    = $connection->quote('%' . $keyword . '%');
   $case_soundex = $connection->quote($keyword);
 
-  $first_word = $filtered_words[0] ?? '';
-  $case_word  = $connection->quote('%' . $connection->escapeLike($first_word) . '%');
+  // ✅ LANGUAGE BOOST
+  $lang_boost = "0";
+  if (!empty($detected_lang)) {
+    $lang_boost = "$title LIKE '%[$detected_lang]%'";
+  }
 
-  // ✅ FINAL RANKING V2
+  // ✅ FINAL V3 RANKING
   $case = "
     CASE
 
@@ -349,23 +334,20 @@ if (
       -- 🥈 STARTS WITH CLEAN
       WHEN $title_clean LIKE $case_start THEN 1
 
-      -- 🥉 LANGUAGE BOOST PERFECT
-      WHEN $lang_boost AND $title_clean = $case_exact THEN 2
+      -- 🥉 LANGUAGE BOOST (ONLY BOOST)
+      WHEN $lang_boost AND $title_clean LIKE $case_start THEN 2
 
-      -- ⭐ ALL WORDS MATCH (STRICT)
-      WHEN " . implode(' AND ', array_map(fn($w) => "$title LIKE '%$w%'", $filtered_words)) . " THEN 3
+      -- ⭐ ALL WORDS MATCH
+      WHEN " . implode(' AND ', array_map(fn($w) => "$title LIKE '%$w%'", $words)) . " THEN 3
 
-      -- ⭐ FLEXIBLE PHRASE
+      -- ⭐ PHRASE
       WHEN $title LIKE $case_phrase THEN 4
 
-      -- ⭐ FULL STRING
+      -- ⭐ FULL MATCH
       WHEN $title LIKE $case_full THEN 5
 
-      -- ⭐ FIRST WORD
-      WHEN $title LIKE $case_word THEN 6
-
       -- ⭐ TYPO
-      WHEN SOUNDEX($title) = SOUNDEX($case_soundex) THEN 7
+      WHEN SOUNDEX($title) = SOUNDEX($case_soundex) THEN 6
 
       ELSE 10
     END
@@ -373,9 +355,10 @@ if (
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // ✅ Freshness boost
-//  $query->addOrderBy('node_field_data', 'created', 'DESC');
+  // ✅ Freshness
+  $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
+
 /////////////////////////////
 
 
