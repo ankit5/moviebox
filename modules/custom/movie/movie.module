@@ -251,8 +251,7 @@ if (
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
-  $keyword = urldecode($keyword);
-  $keyword = trim(mb_strtolower($keyword));
+  $keyword = strtolower(trim(urldecode($keyword)));
 
   if ($keyword === '') {
     return;
@@ -260,28 +259,41 @@ if (
 
   $connection = \Drupal::database();
 
-  // ✅ Detect language (AUTO)
-  $languages = ['hindi', 'tamil', 'english', 'telugu', 'kannada'];
-  $detected_lang = '';
+  // ✅ STOP WORDS
+  $stop_words = ['movie','full','hd','film','part'];
 
-  foreach ($languages as $lang) {
-    if (str_contains($keyword, $lang)) {
-      $detected_lang = $lang;
-      $keyword = str_replace($lang, '', $keyword);
-      break;
+  // ✅ LANGUAGE LIST
+  $languages = ['hindi','tamil','english','telugu','kannada'];
+
+  $words = preg_split('/\s+/', $keyword);
+
+  $main_words = [];
+  $optional_words = [];
+  $lang = '';
+
+  foreach ($words as $w) {
+
+    if (in_array($w, $stop_words)) continue;
+
+    if (in_array($w, $languages)) {
+      $lang = $w;
+      continue;
     }
+
+    if (is_numeric($w)) {
+      $optional_words[] = $w;
+      continue;
+    }
+
+    $main_words[] = $w;
   }
 
-  $keyword = trim($keyword);
+  if (empty($main_words)) {
+    $main_words = $words;
+  }
 
-  // ✅ Clean keyword
-  $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', $keyword);
-
-  // ✅ Words
-  $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
-
-  // ✅ SQL helpers
-  $title = "node_field_data.title";
+  // ✅ CLEAN TITLE (NO REGEXP)
+  $title = "LOWER(node_field_data.title)";
 
   $title_clean = "
     REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
@@ -293,61 +305,61 @@ if (
     ']', '')
   ";
 
-  // ✅ WHERE (SMART: ONLY MAIN WORDS)
+  // ✅ CLEAN KEYWORD
+  $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', implode('', $main_words));
+
+  // ✅ WHERE (SMART)
   $conditions = [];
   $args = [];
 
-  foreach ($words as $i => $word) {
-    $ph = ':w' . $i;
+  foreach ($main_words as $i => $word) {
+    $ph = ':mw' . $i;
     $conditions[] = "$title LIKE $ph";
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  // fallback: if no words (rare)
-  if (empty($conditions)) {
-    $conditions[] = "$title LIKE :fallback";
-    $args[':fallback'] = '%';
+  // optional fallback
+  $optional_sql = [];
+  foreach ($optional_words as $i => $word) {
+    $ph = ':ow' . $i;
+    $optional_sql[] = "$title LIKE $ph";
+    $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  $query->addWhereExpression(0, '(' . implode(' OR ', $conditions) . ')', $args);
+  $where_sql = '(' . implode(' AND ', $conditions) . ')';
 
-  // ✅ CASE values
-  $case_exact   = $connection->quote($keyword_clean);
-  $case_start   = $connection->quote($keyword_clean . '%');
-  $case_phrase  = $connection->quote('%' . implode('%', $words) . '%');
-  $case_full    = $connection->quote('%' . $keyword . '%');
-  $case_soundex = $connection->quote($keyword);
-
-  // ✅ LANGUAGE BOOST
-  $lang_boost = "0";
-  if (!empty($detected_lang)) {
-    $lang_boost = "$title LIKE '%[$detected_lang]%'";
+  if (!empty($optional_sql)) {
+    $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
   }
 
-  // ✅ FINAL V3 RANKING
+  $query->addWhereExpression(0, $where_sql, $args);
+
+  // ✅ CASE VALUES
+  $case_exact  = $connection->quote($keyword_clean);
+  $case_start  = $connection->quote($keyword_clean . '%');
+  $case_full   = $connection->quote('%' . $keyword_clean . '%');
+
+  // ✅ FINAL RANKING
   $case = "
     CASE
 
       -- 🥇 PERFECT CLEAN MATCH
       WHEN $title_clean = $case_exact THEN 0
 
-      -- 🥈 STARTS WITH CLEAN
+      -- 🥈 STARTS WITH
       WHEN $title_clean LIKE $case_start THEN 1
 
-      -- 🥉 LANGUAGE BOOST (ONLY BOOST)
-      WHEN $lang_boost AND $title_clean LIKE $case_start THEN 2
+      -- 🥉 LANGUAGE BOOST
+      " . (!empty($lang) ? "WHEN $title LIKE '%[$lang]%' THEN 2" : "") . "
 
-      -- ⭐ ALL WORDS MATCH
-      WHEN " . implode(' AND ', array_map(fn($w) => "$title LIKE '%$w%'", $words)) . " THEN 3
+      -- ⭐ NORMAL MATCH
+      WHEN $title_clean LIKE $case_full THEN 3
 
-      -- ⭐ PHRASE
-      WHEN $title LIKE $case_phrase THEN 4
-
-      -- ⭐ FULL MATCH
-      WHEN $title LIKE $case_full THEN 5
+      -- ⭐ NUMBER BOOST
+      " . (!empty($optional_words) ? "WHEN $title LIKE '%{$optional_words[0]}%' THEN 4" : "") . "
 
       -- ⭐ TYPO
-      WHEN SOUNDEX($title) = SOUNDEX($case_soundex) THEN 6
+      WHEN SOUNDEX($title) = SOUNDEX(" . $connection->quote($keyword) . ") THEN 5
 
       ELSE 10
     END
@@ -355,10 +367,9 @@ if (
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // ✅ Freshness
- // $query->addOrderBy('node_field_data', 'created', 'DESC');
+  // ✅ Fresh content boost
+  $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
-
 /////////////////////////////
 
 
