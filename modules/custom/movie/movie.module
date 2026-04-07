@@ -338,7 +338,7 @@ if (
       WHEN $lang_boost AND $title_clean LIKE $case_start THEN 2
 
       -- ⭐ ALL WORDS MATCH
-      WHEN " . implode(' AND ', array_map(fn($w) => "$title LIKE '%$w%'", $words)) . " THEN 3
+      WHEN " . implode(' OR ', array_map(fn($w) => "$title LIKE '%$w%'", $words)) . " THEN 3
 
       -- ⭐ PHRASE
       WHEN $title LIKE $case_phrase THEN 4
