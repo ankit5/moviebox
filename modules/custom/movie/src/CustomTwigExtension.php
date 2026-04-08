@@ -64,6 +64,7 @@ class CustomTwigExtension extends AbstractExtension {
       new TwigFunction('entity_load_uuid', [$this, 'entityLoadUuid']),
       new TwigFunction('city_value', [$this, 'cityValue']),
       new TwigFunction('base64_encode', [$this, 'base64_encode']),
+      new TwigFunction('getSeasonRanges', [$this, 'getSeasonRanges']),
       new TwigFunction('encryptData', [$this, 'encryptData']),
       new TwigFunction('ba', [$this, 'basedecode']),
       new TwigFunction('parse_url_remove', [$this, 'parse_url_remove']),
@@ -76,6 +77,49 @@ class CustomTwigExtension extends AbstractExtension {
 $slug = Html::getClass($string);
 return $slug;
   }
+
+  public function getSeasonRanges($data) {
+    // If JSON string, decode it
+    if (is_string($data)) {
+        $data = json_decode($data, true);
+    }
+
+    if (empty($data)) return '';
+
+    // Extract season numbers
+    $seasons = array_column($data, 'se');
+
+    // Clean + sort
+    $seasons = array_unique($seasons);
+    sort($seasons);
+
+    $ranges = [];
+    $start = $seasons[0];
+    $prev = $seasons[0];
+
+    foreach ($seasons as $index => $current) {
+        if ($index == 0) continue;
+
+        if ($current == $prev + 1) {
+            $prev = $current;
+        } else {
+            $ranges[] = ($start == $prev)
+                ? 'S' . $start
+                : 'S' . $start . '-S' . $prev;
+
+            $start = $current;
+            $prev = $current;
+        }
+    }
+
+    // Last range
+    $ranges[] = ($start == $prev)
+        ? 'S' . $start
+        : 'S' . $start . '-S' . $prev;
+
+    return implode(', ', $ranges);
+}
+  
   public function term_json($string,$string2){
     
     $arr = explode(",",$string);
