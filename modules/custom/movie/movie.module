@@ -395,10 +395,11 @@ if (
 $query->addField('node__field_releasedate', 'field_releasedate_value');
 
 // If not already joined, add join manually:
-$query->leftJoin(
-  'node__field_releasedate',
+// ✅ Add relationship for release date field
+$query->addRelationship(
   'fr',
-  'fr.entity_id = node_field_data.nid'
+  'node__field_releasedate',
+  'node__field_releasedate.entity_id = node_field_data.nid'
 );
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
