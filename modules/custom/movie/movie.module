@@ -326,11 +326,17 @@ if (
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  $where_sql = '(' . implode(' AND ', $conditions) . ')';
+  $where_sql = '(' . implode(' OR ', $conditions) . ')';
 
   if (!empty($optional_sql)) {
     $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
   }
+
+   -- 🥉 LANGUAGE BOOST
+    if (!empty($lang)) {
+    $where_sql .= ' OR (' . implode(' OR ', '%[$lang]%') . ')';
+  }
+  
 
   $query->addWhereExpression(0, $where_sql, $args);
 
