@@ -342,7 +342,7 @@ if (
   // ✅ LANGUAGE CONDITION (FIXED)
   if (!empty($lang)) {
     $ph = ':lang';
-    $where_sql .= " OR $title LIKE $ph";
+    $where_sql .= " AND $title LIKE $ph";
     $args[$ph] = '%[' . $connection->escapeLike($lang) . ']%';
   }
 
