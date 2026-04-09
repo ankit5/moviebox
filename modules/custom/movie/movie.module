@@ -222,14 +222,16 @@ if($page > 38){
 }
 
 /////////////////////////////
-
 if (
-  ($view->current_display === 'page_1' || $view->current_display === 'rest_export_1'  || $view->current_display === 'rest_export_2') &&
+  ($view->current_display === 'page_1' || 
+   $view->current_display === 'rest_export_1' || 
+   $view->current_display === 'rest_export_2') &&
   (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
 ) {
+
   $exposed = $view->exposed_raw_input;
 
-  // ✅ Remove default Views title filters
+  // ✅ REMOVE DEFAULT TITLE FILTERS
   if (!empty($query->where) && is_array($query->where)) {
     foreach ($query->where as $gid => $group) {
       if (empty($group['conditions'])) continue;
@@ -246,7 +248,7 @@ if (
     }
   }
 
-  // ✅ Keyword
+  // ✅ KEYWORD
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
@@ -292,7 +294,7 @@ if (
     $main_words = $words;
   }
 
-  // ✅ CLEAN TITLE (NO REGEXP)
+  // ✅ TITLE FIELDS
   $title = "LOWER(node_field_data.title)";
 
   $title_clean = "
@@ -308,7 +310,7 @@ if (
   // ✅ CLEAN KEYWORD
   $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', implode('', $main_words));
 
-  // ✅ WHERE (SMART)
+  // ✅ WHERE BUILD
   $conditions = [];
   $args = [];
 
@@ -318,7 +320,7 @@ if (
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  // optional fallback
+  // OPTIONAL WORDS (numbers etc.)
   $optional_sql = [];
   foreach ($optional_words as $i => $word) {
     $ph = ':ow' . $i;
@@ -326,45 +328,63 @@ if (
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  $where_sql = '(' . implode(' OR ', $conditions) . ')';
+  // SAFE WHERE
+  $where_sql = '1=1';
+
+  if (!empty($conditions)) {
+    $where_sql = '(' . implode(' OR ', $conditions) . ')';
+  }
 
   if (!empty($optional_sql)) {
     $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
   }
 
-   -- 🥉 LANGUAGE BOOST
-    if (!empty($lang)) {
-    $where_sql .= ' OR (' . implode(' OR ', '%[$lang]%') . ')';
+  // ✅ LANGUAGE CONDITION (FIXED)
+  if (!empty($lang)) {
+    $ph = ':lang';
+    $where_sql .= " OR $title LIKE $ph";
+    $args[$ph] = '%[' . $connection->escapeLike($lang) . ']%';
   }
-  
 
   $query->addWhereExpression(0, $where_sql, $args);
 
   // ✅ CASE VALUES
-  $case_exact  = $connection->quote($keyword_clean);
-  $case_start  = $connection->quote($keyword_clean . '%');
-  $case_full   = $connection->quote('%' . $keyword_clean . '%');
+  $case_exact = $connection->quote($keyword_clean);
+  $case_start = $connection->quote($keyword_clean . '%');
+  $case_full  = $connection->quote('%' . $keyword_clean . '%');
+
+  // ✅ LANGUAGE CASE (SAFE)
+  $lang_case = '';
+  if (!empty($lang)) {
+    $lang_case = "WHEN $title LIKE " . $connection->quote('%[' . $lang . ']%') . " THEN 2";
+  }
+
+  // ✅ NUMBER BOOST (SAFE)
+  $number_case = '';
+  if (!empty($optional_words)) {
+    $number_case = "WHEN $title LIKE '%" . $optional_words[0] . "%' THEN 4";
+  }
 
   // ✅ FINAL RANKING
   $case = "
     CASE
 
-      -- 🥇 PERFECT CLEAN MATCH
+      -- 🥇 EXACT MATCH
       WHEN $title_clean = $case_exact THEN 0
 
       -- 🥈 STARTS WITH
       WHEN $title_clean LIKE $case_start THEN 1
 
       -- 🥉 LANGUAGE BOOST
-      " . (!empty($lang) ? "WHEN $title LIKE '%[$lang]%' THEN 2" : "") . "
+      $lang_case
 
-      -- ⭐ NORMAL MATCH
+      -- ⭐ PARTIAL MATCH
       WHEN $title_clean LIKE $case_full THEN 3
 
       -- ⭐ NUMBER BOOST
-      " . (!empty($optional_words) ? "WHEN $title LIKE '%{$optional_words[0]}%' THEN 4" : "") . "
+      $number_case
 
-      -- ⭐ TYPO
+      -- ⭐ TYPO MATCH
       WHEN SOUNDEX($title) = SOUNDEX(" . $connection->quote($keyword) . ") THEN 5
 
       ELSE 10
@@ -373,8 +393,8 @@ if (
 
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // ✅ Fresh content boost
-//  $query->addOrderBy('node_field_data', 'created', 'DESC');
+  // ✅ OPTIONAL: LATEST FIRST
+  // $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
 /////////////////////////////
 
