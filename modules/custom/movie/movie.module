@@ -391,12 +391,12 @@ if (
     END
   ";
 
-
+// ✅ THEN RELEASE DATE
+$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
 // ✅ RANKING FIRST
 $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-// ✅ THEN RELEASE DATE
-$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
+
 
   // ✅ OPTIONAL: LATEST FIRST
   // $query->addOrderBy('node_field_data', 'created', 'DESC');
