@@ -224,7 +224,7 @@ if($page > 38){
 /////////////////////////////
 
 if (
-  ($view->current_display === 'page_1' || $view->current_display === 'rest_export_1')  || $view->current_display === 'rest_export_2') &&
+  ($view->current_display === 'page_1' || $view->current_display === 'rest_export_1'  || $view->current_display === 'rest_export_2') &&
   (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
 ) {
   $exposed = $view->exposed_raw_input;
