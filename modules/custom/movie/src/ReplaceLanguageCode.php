@@ -362,12 +362,12 @@ function curlgetmoviebox_new($i,$api,$post){
 }
 
 function curlgetmoviebox($i,$api,$post){
-  $str = curlgetmoviebox_new($i,$api,$post);
+  // $str = curlgetmoviebox_new($i,$api,$post);
   
-  $data = json_decode($str,true);
-  // print_r($data);
-  // exit;
-   return $data;
+  // $data = json_decode($str,true);
+  // // print_r($data);
+  // // exit;
+  //  return $data;
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
   curl_setopt($curl, CURLOPT_HEADER, false);
@@ -413,8 +413,8 @@ function curlgetmoviebox($i,$api,$post){
   curl_close($curl);
  // print $str;
   //exit;
- print "<pre>";
- print_r($str); exit;
+ // print "<pre>";
+ // print_r($str); exit;
   
    $data = json_decode($str,true);
    return $data;
