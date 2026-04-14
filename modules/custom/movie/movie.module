@@ -252,10 +252,10 @@ if (
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
-
+ $keyword_rpl = [';', '$', '%', '^'];
+$keyword = str_replace($keyword_rpl, '', $keyword); 
   $keyword = strtolower(trim(urldecode($keyword)));
-  $keyword_rpl = [';', '$', '%', '^'];
-#keyword = str_replace($keyword_rpl, '', $keyword); 
+ 
   if ($keyword === '') {
     return;
   }
