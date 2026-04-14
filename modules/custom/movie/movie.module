@@ -254,7 +254,8 @@ if (
     : ($exposed['title_2'] ?? '');
 
   $keyword = strtolower(trim(urldecode($keyword)));
-
+  $keyword_rpl = [';', '$', '%', '^'];
+#keyword = str_replace($keyword_rpl, '', $keyword); 
   if ($keyword === '') {
     return;
   }
