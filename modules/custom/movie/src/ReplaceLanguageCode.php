@@ -150,6 +150,7 @@ public static function replaceLangcode3($nid, &$context){
 //  print $node->field_url->value;
 // var_export($node->field_subjectid->value);
 //  exit;
+    
 
    $message2 = getmoviebox_detail_session($node->field_detailpath->value,$node->field_subjectid->value);
     
@@ -157,8 +158,6 @@ public static function replaceLangcode3($nid, &$context){
 print_r($message2);
  
    exit;
-  
-    
 
    //////////////////////////////////////////////
    
