@@ -303,12 +303,13 @@ if (
     ' ', ''),
     '-', ''),
     ':', ''),
+    ';', ''),
     '[', ''),
     ']', '')
   ";
 
   // ✅ CLEAN KEYWORD
-  $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', implode('', $main_words));
+  $keyword_clean = str_replace([' ', '-', ':', ';', '[', ']'], '', implode('', $main_words));
 
   // ✅ WHERE BUILD
   $conditions = [];
