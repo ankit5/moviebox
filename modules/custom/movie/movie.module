@@ -252,8 +252,8 @@ if (
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
- $keyword_rpl = [';', '$', '%', '^'];
-$keyword = str_replace($keyword_rpl, '', $keyword); 
+// Remove unwanted characters (keep letters, numbers, spaces)
+$keyword = preg_replace('/[^\p{L}\p{N}\s]+/u', '', $keyword); 
   $keyword = strtolower(trim(urldecode($keyword)));
  
   if ($keyword === '') {
