@@ -263,7 +263,7 @@ $keyword = preg_replace('/[^\p{L}\p{N}\s]+/u', '', $keyword);
   $connection = \Drupal::database();
 
   // ✅ STOP WORDS
-  $stop_words = ['movie','full','hd','film','part'];
+  $stop_words = ['movie','full','hd','film','part','and','season','episode'];
 
   // ✅ LANGUAGE LIST
   $languages = ['hindi','tamil','english','telugu','kannada'];
