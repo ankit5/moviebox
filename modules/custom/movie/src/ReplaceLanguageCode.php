@@ -532,15 +532,12 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
         }
     else if($result<1){
     
-    
-    /////tags
-    $field_tags =[];
-    $genre = explode(",",$post['genre']);
-    foreach($genre as $item) {
-      if($item){
-    $field_tags[] = tags_create($item,'','tags');
-      }
+    if(!empty($post['countryName'])){
+     if($post['countryName']=='Nigeria'){
+      return true;
+     }
     }
+   
     
     //channel
     // $field_channel =[];
@@ -558,6 +555,16 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
 // exit;
     
       if($post['title'] && $post['subjectType']<=2){
+
+         /////tags
+    $field_tags =[];
+    $genre = explode(",",$post['genre']);
+    foreach($genre as $item) {
+      if($item){
+    $field_tags[] = tags_create($item,'','tags');
+      }
+    }
+        
         $node = \Drupal::entityTypeManager()->getStorage('node')->create([
           'type' => 'movie',
           'title' => $post['title'],
@@ -568,18 +575,17 @@ function save_movie_box($items,$platform='',$month='',$block_id='',$i=''){
           'field_duration' => $post['duration'] ?? 0,
           'field_genre' => $post['genre'],
           'field_genre_term' => $field_tags,
-          'field_hasresource' => $post['hasResource'],
+         // 'field_hasresource' => $post['hasResource'],
           'field_imdbratingvalue' => $post['imdbRatingValue'],
-          'field_keywords' => $post['keywords'] ?? '',
-          'field_ops' => $post['ops'],
+          // 'field_keywords' => $post['keywords'] ?? '',
+          // 'field_ops' => $post['ops'],
           'field_releasedate' => strtotime($post['releaseDate']),	
           'field_stafflist' => json_encode($post['staffList']),
           'field_subjectid' => $post['subjectId'],
           'field_subjecttype' => $post['subjectType'],
-          'field_subtitles' => $post['subtitles'],
           'field_trailer' => $post['trailer'],
-          'field_platform' => $platform,
-          'field_month' => $month,
+          // 'field_platform' => $platform,
+          // 'field_month' => $month,
         ]);
         $results[] = $node->save();
         if($node->id() && $block_id){
