@@ -569,9 +569,6 @@ $keyword = preg_replace('/[^\p{L}\p{N}\s]+/u', '', $keyword);
       -- ⭐ NUMBER BOOST
       $number_case
 
-      -- ⭐ TYPO MATCH
-      WHEN SOUNDEX($title) = SOUNDEX(" . $connection->quote($keyword) . ") THEN 5
-
       ELSE 10
     END
   ";
