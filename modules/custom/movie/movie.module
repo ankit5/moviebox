@@ -482,18 +482,11 @@ $keyword = preg_replace('/[^\p{L}\p{N}\s]+/u', '', $keyword);
   // ✅ TITLE FIELDS
   $title = "LOWER(node_field_data.title)";
 
-  $title_clean = "
-    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
-      LOWER(node_field_data.title),
-    ' ', ''),
-    '-', ''),
-    ':', ''),
-    '[', ''),
-    ']', '')
-  ";
+  $title_clean = " LOWER(node_field_data.title)";
 
   // ✅ CLEAN KEYWORD
   $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', implode('', $main_words));
+$keyword_clean =  $main_words;
 
   // ✅ WHERE BUILD
   $conditions = [];
