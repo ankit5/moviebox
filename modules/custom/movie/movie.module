@@ -223,7 +223,7 @@ if($page > 38){
 
 /////////////////////////////
 if (
-  ($view->current_display === 'page_1' || 
+  ($view->current_display === 'page_1old' || 
    $view->current_display === 'rest_export_1' || 
    $view->current_display === 'rest_export_2') &&
   (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
@@ -404,6 +404,192 @@ $query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC')
   // $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
 /////////////////////////////
+
+/////////////////////////////
+if (
+  ($view->current_display === 'page_1' || 
+   $view->current_display === 'rest_export_1old' || 
+   $view->current_display === 'rest_export_2old') &&
+  (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
+) {
+
+  $exposed = $view->exposed_raw_input;
+
+  // ✅ REMOVE DEFAULT TITLE FILTERS
+  if (!empty($query->where) && is_array($query->where)) {
+    foreach ($query->where as $gid => $group) {
+      if (empty($group['conditions'])) continue;
+
+      foreach ($group['conditions'] as $cid => $condition) {
+        if (!empty($condition['field']) && str_contains($condition['field'], 'title')) {
+          unset($query->where[$gid]['conditions'][$cid]);
+        }
+      }
+
+      if (!empty($query->where[$gid]['conditions'])) {
+        $query->where[$gid]['conditions'] = array_values($query->where[$gid]['conditions']);
+      }
+    }
+  }
+
+  // ✅ KEYWORD
+  $keyword = !empty($exposed['query'])
+    ? $exposed['query']
+    : ($exposed['title_2'] ?? '');
+// Remove unwanted characters (keep letters, numbers, spaces)
+$keyword = preg_replace('/[^\p{L}\p{N}\s]+/u', '', $keyword); 
+  $keyword = strtolower(trim(urldecode($keyword)));
+ $keyword = str_replace('and','&',$keyword);
+  if ($keyword === '') {
+    return;
+  }
+
+  $connection = \Drupal::database();
+
+  // ✅ STOP WORDS
+  $stop_words = ['movie','full','hd','film','part','season','episode'];
+
+  // ✅ LANGUAGE LIST
+  $languages = ['hindi','tamil','english','telugu','kannada'];
+
+  $words = preg_split('/\s+/', $keyword);
+
+  $main_words = [];
+  $optional_words = [];
+  $lang = '';
+
+  foreach ($words as $w) {
+
+    if (in_array($w, $stop_words)) continue;
+
+    if (in_array($w, $languages)) {
+      $lang = $w;
+      continue;
+    }
+
+    if (is_numeric($w)) {
+      $optional_words[] = $w;
+      continue;
+    }
+
+    $main_words[] = $w;
+  }
+
+  if (empty($main_words)) {
+    $main_words = $words;
+  }
+
+  // ✅ TITLE FIELDS
+  $title = "LOWER(node_field_data.title)";
+
+  $title_clean = "
+    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+      LOWER(node_field_data.title),
+    ' ', ''),
+    '-', ''),
+    ':', ''),
+    '[', ''),
+    ']', '')
+  ";
+
+  // ✅ CLEAN KEYWORD
+  $keyword_clean = str_replace([' ', '-', ':', '[', ']'], '', implode('', $main_words));
+
+  // ✅ WHERE BUILD
+  $conditions = [];
+  $args = [];
+
+  foreach ($main_words as $i => $word) {
+    $ph = ':mw' . $i;
+    $conditions[] = "$title LIKE $ph";
+    $args[$ph] = '%' . $connection->escapeLike($word) . '%';
+  }
+
+  // OPTIONAL WORDS (numbers etc.)
+  $optional_sql = [];
+  foreach ($optional_words as $i => $word) {
+    $ph = ':ow' . $i;
+    $optional_sql[] = "$title LIKE $ph";
+    $args[$ph] = '%' . $connection->escapeLike($word) . '%';
+  }
+
+  // SAFE WHERE
+  $where_sql = '1=1';
+
+  if (!empty($conditions)) {
+    $where_sql = '(' . implode(' OR ', $conditions) . ')';
+  }
+
+  if (!empty($optional_sql)) {
+    $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
+  }
+
+  // ✅ LANGUAGE CONDITION (FIXED)
+  if (!empty($lang)) {
+    $ph = ':lang';
+    $where_sql .= " AND $title LIKE $ph";
+    $args[$ph] = '%[' . $connection->escapeLike($lang) . ']%';
+  }
+
+  $query->addWhereExpression(0, $where_sql, $args);
+
+  // ✅ CASE VALUES
+  $case_exact = $connection->quote($keyword_clean);
+  $case_start = $connection->quote($keyword_clean . '%');
+  $case_full  = $connection->quote('%' . $keyword_clean . '%');
+
+  // ✅ LANGUAGE CASE (SAFE)
+  $lang_case = '';
+  if (!empty($lang)) {
+    $lang_case = "WHEN $title LIKE " . $connection->quote('%[' . $lang . ']%') . " THEN 2";
+  }
+
+  // ✅ NUMBER BOOST (SAFE)
+  $number_case = '';
+  if (!empty($optional_words)) {
+    $number_case = "WHEN $title LIKE '%" . $optional_words[0] . "%' THEN 4";
+  }
+
+  // ✅ FINAL RANKING
+  $case = "
+    CASE
+
+      -- 🥇 EXACT MATCH
+      WHEN $title_clean = $case_exact THEN 0
+
+      -- 🥈 STARTS WITH
+      WHEN $title_clean LIKE $case_start THEN 1
+
+      -- 🥉 LANGUAGE BOOST
+      $lang_case
+
+      -- ⭐ PARTIAL MATCH
+      WHEN $title_clean LIKE $case_full THEN 3
+
+      -- ⭐ NUMBER BOOST
+      $number_case
+
+      -- ⭐ TYPO MATCH
+      WHEN SOUNDEX($title) = SOUNDEX(" . $connection->quote($keyword) . ") THEN 5
+
+      ELSE 10
+    END
+  ";
+
+
+// ✅ RANKING FIRST
+$query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
+// ✅ THEN RELEASE DATE
+$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
+
+
+
+  // ✅ OPTIONAL: LATEST FIRST
+  // $query->addOrderBy('node_field_data', 'created', 'DESC');
+}
+/////////////////////////////
+
+
 
 
  if ($view->id() == "detail_movie"){
