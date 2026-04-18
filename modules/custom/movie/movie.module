@@ -398,7 +398,7 @@ if (
   ";
 
 // ✅ THEN RELEASE DATE
-$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
+//$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
 
   // ✅ APPLY SORT
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
