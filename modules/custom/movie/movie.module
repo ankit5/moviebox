@@ -225,8 +225,8 @@ if($page > 38){
 
 if (
   ($view->current_display === 'page_1' || 
-   $view->current_display === 'rest_export_1' || 
-   $view->current_display === 'rest_export_2') &&
+   $view->current_display === 'rest_export_1ol' || 
+   $view->current_display === 'rest_export_2ol') &&
   (!empty($view->exposed_raw_input['query']) || !empty($view->exposed_raw_input['title_2']))
 ) {
 
@@ -249,7 +249,7 @@ if (
     }
   }
 
-  // ✅ KEYWORD
+  // ✅ GET KEYWORD
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
@@ -259,14 +259,15 @@ if (
   $keyword = strtolower(trim(urldecode($keyword)));
   $keyword = str_replace('and','&',$keyword);
 
-  if ($keyword === '') {
-    return;
-  }
+  if ($keyword === '') return;
 
   $connection = \Drupal::database();
 
-  // ✅ STOP WORDS
-  $stop_words = ['movie','full','hd','film','part','season','episode'];
+  // ✅ STOP WORDS (IMPORTANT FIX)
+  $stop_words = [
+    'movie','full','hd','film','part','season','episode',
+    'in','of','the','a','an','on','at','for','to','from','by','with'
+  ];
 
   // ✅ LANGUAGE LIST
   $languages = ['hindi','tamil','english','telugu','kannada'];
@@ -298,7 +299,7 @@ if (
     $main_words = $words;
   }
 
-  // ✅ TITLE CLEAN (CRITICAL FIX)
+  // ✅ CLEAN TITLE (CRITICAL)
   $title_clean = "
     REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
       LOWER(node_field_data.title),
@@ -313,20 +314,28 @@ if (
   // ✅ CLEAN KEYWORD
   $keyword_clean = str_replace([' ', '-', ':', '[', ']', '.'], '', implode('', $main_words));
 
-  // ✅ WHERE BUILD
-  $conditions = [];
+  // ✅ SMART WHERE (BEST LOGIC)
+  $must_conditions = [];
+  $optional_conditions = [];
   $args = [];
 
   foreach ($main_words as $i => $word) {
 
     $word_clean = str_replace([' ', '-', ':', '[', ']', '.'], '', $word);
-
     $ph = ':mw' . $i;
-    $conditions[] = "$title_clean LIKE $ph";
+
+    if ($i < 2) {
+      // First 2 words = MUST match
+      $must_conditions[] = "$title_clean LIKE $ph";
+    } else {
+      // Rest = optional
+      $optional_conditions[] = "$title_clean LIKE $ph";
+    }
+
     $args[$ph] = '%' . $connection->escapeLike($word_clean) . '%';
   }
 
-  // OPTIONAL WORDS (numbers etc.)
+  // OPTIONAL NUMBERS (S1, 2, etc.)
   $optional_sql = [];
   foreach ($optional_words as $i => $word) {
     $ph = ':ow' . $i;
@@ -334,18 +343,22 @@ if (
     $args[$ph] = '%' . $connection->escapeLike($word) . '%';
   }
 
-  // SAFE WHERE
+  // BUILD WHERE
   $where_sql = '1=1';
 
-  if (!empty($conditions)) {
-    $where_sql = '(' . implode(' AND ', $conditions) . ')';
+  if (!empty($must_conditions)) {
+    $where_sql = '(' . implode(' AND ', $must_conditions) . ')';
+  }
+
+  if (!empty($optional_conditions)) {
+    $where_sql .= ' OR (' . implode(' OR ', $optional_conditions) . ')';
   }
 
   if (!empty($optional_sql)) {
     $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
   }
 
-  // ✅ LANGUAGE CONDITION
+  // ✅ LANGUAGE FILTER
   if (!empty($lang)) {
     $ph = ':lang';
     $where_sql .= " AND LOWER(node_field_data.title) LIKE $ph";
@@ -354,24 +367,24 @@ if (
 
   $query->addWhereExpression(0, $where_sql, $args);
 
-  // ✅ CASE VALUES
+  // ✅ RANKING VALUES
   $case_exact = $connection->quote($keyword_clean);
   $case_start = $connection->quote($keyword_clean . '%');
   $case_full  = $connection->quote('%' . $keyword_clean . '%');
 
-  // ✅ LANGUAGE BOOST
+  // LANGUAGE BOOST
   $lang_case = '';
   if (!empty($lang)) {
     $lang_case = "WHEN LOWER(node_field_data.title) LIKE " . $connection->quote('%[' . $lang . ']%') . " THEN 2";
   }
 
-  // ✅ NUMBER BOOST
+  // NUMBER BOOST
   $number_case = '';
   if (!empty($optional_words)) {
     $number_case = "WHEN $title_clean LIKE '%" . $optional_words[0] . "%' THEN 4";
   }
 
-  // ✅ FINAL RANKING (ALIGNED WITH CLEAN TITLE)
+  // ✅ FINAL RANKING
   $case = "
     CASE
 
@@ -397,15 +410,13 @@ if (
     END
   ";
 
-// ✅ THEN RELEASE DATE
-//$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
-
   // ✅ APPLY SORT
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
-  // OPTIONAL: latest first
+  // OPTIONAL: newest first
   // $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
+
 /////////////////////////////
 
 
