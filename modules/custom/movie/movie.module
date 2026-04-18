@@ -399,6 +399,8 @@ if (
 
   // ✅ APPLY SORT
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
+// ✅ THEN RELEASE DATE
+//$query->addOrderBy('node__field_releasedate', 'field_releasedate_value', 'DESC');
 
   // OPTIONAL: latest first
   // $query->addOrderBy('node_field_data', 'created', 'DESC');
