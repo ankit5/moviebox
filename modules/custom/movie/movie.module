@@ -266,7 +266,7 @@ if (
   // ✅ STOP WORDS
   $stop_words = [
     'movie','full','hd','film','part','season','episode',
-    'in','of','the','a','an','on','at','for','to','from','by','with'
+    'in','of','a','an','on','at','for','to','by','with'
   ];
 
   // ✅ LANGUAGE
