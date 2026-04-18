@@ -222,6 +222,7 @@ if($page > 38){
 }
 
 /////////////////////////////
+
 if (
   ($view->current_display === 'page_1' || 
    $view->current_display === 'rest_export_1ol' || 
@@ -248,28 +249,27 @@ if (
     }
   }
 
-  // ✅ KEYWORD
+  // ✅ GET KEYWORD
   $keyword = !empty($exposed['query'])
     ? $exposed['query']
     : ($exposed['title_2'] ?? '');
 
+  // Clean keyword
   $keyword = preg_replace('/[^\p{L}\p{N}\s\.]+/u', '', $keyword);
   $keyword = strtolower(trim(urldecode($keyword)));
+  $keyword = str_replace('and','&',$keyword);
 
   if ($keyword === '') return;
 
   $connection = \Drupal::database();
 
-  // ✅ FULL PHRASE (IMPORTANT)
-  $full_keyword_clean = str_replace([' ', '-', ':', '[', ']', '.'], '', $keyword);
-
-  // ✅ STOP WORDS
+  // ✅ STOP WORDS (IMPORTANT FIX)
   $stop_words = [
     'movie','full','hd','film','part','season','episode',
-    'in','of','a','an','on','at','for','to','by','with'
+    'in','of','the','a','an','on','at','for','to','from','by','with'
   ];
 
-  // ✅ LANGUAGE
+  // ✅ LANGUAGE LIST
   $languages = ['hindi','tamil','english','telugu','kannada'];
 
   $words = preg_split('/\s+/', $keyword);
@@ -279,6 +279,8 @@ if (
   $lang = '';
 
   foreach ($words as $w) {
+
+    if (in_array($w, $stop_words)) continue;
 
     if (in_array($w, $languages)) {
       $lang = $w;
@@ -290,8 +292,6 @@ if (
       continue;
     }
 
-    if (in_array($w, $stop_words)) continue;
-
     $main_words[] = $w;
   }
 
@@ -299,7 +299,7 @@ if (
     $main_words = $words;
   }
 
-  // ✅ CLEAN TITLE
+  // ✅ CLEAN TITLE (CRITICAL)
   $title_clean = "
     REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
       LOWER(node_field_data.title),
@@ -314,10 +314,7 @@ if (
   // ✅ CLEAN KEYWORD
   $keyword_clean = str_replace([' ', '-', ':', '[', ']', '.'], '', implode('', $main_words));
 
-  // =========================
-  // ✅ WHERE (SMART + PHRASE)
-  // =========================
-
+  // ✅ SMART WHERE (BEST LOGIC)
   $must_conditions = [];
   $optional_conditions = [];
   $args = [];
@@ -328,14 +325,25 @@ if (
     $ph = ':mw' . $i;
 
     if ($i < 2) {
+      // First 2 words = MUST match
       $must_conditions[] = "$title_clean LIKE $ph";
     } else {
+      // Rest = optional
       $optional_conditions[] = "$title_clean LIKE $ph";
     }
 
     $args[$ph] = '%' . $connection->escapeLike($word_clean) . '%';
   }
 
+  // OPTIONAL NUMBERS (S1, 2, etc.)
+  $optional_sql = [];
+  foreach ($optional_words as $i => $word) {
+    $ph = ':ow' . $i;
+    $optional_sql[] = "$title_clean LIKE $ph";
+    $args[$ph] = '%' . $connection->escapeLike($word) . '%';
+  }
+
+  // BUILD WHERE
   $where_sql = '1=1';
 
   if (!empty($must_conditions)) {
@@ -346,9 +354,9 @@ if (
     $where_sql .= ' OR (' . implode(' OR ', $optional_conditions) . ')';
   }
 
-  // ✅ FULL PHRASE PRIORITY IN WHERE
-  $where_sql = "($title_clean LIKE :full_phrase) OR (" . $where_sql . ")";
-  $args[':full_phrase'] = '%' . $connection->escapeLike($full_keyword_clean) . '%';
+  if (!empty($optional_sql)) {
+    $where_sql .= ' OR (' . implode(' OR ', $optional_sql) . ')';
+  }
 
   // ✅ LANGUAGE FILTER
   if (!empty($lang)) {
@@ -359,76 +367,56 @@ if (
 
   $query->addWhereExpression(0, $where_sql, $args);
 
-  // =========================
-  // ✅ RANKING (CRITICAL FIX)
-  // =========================
-
+  // ✅ RANKING VALUES
   $case_exact = $connection->quote($keyword_clean);
   $case_start = $connection->quote($keyword_clean . '%');
   $case_full  = $connection->quote('%' . $keyword_clean . '%');
-  $case_full_exact = $connection->quote($full_keyword_clean);
 
   // LANGUAGE BOOST
   $lang_case = '';
   if (!empty($lang)) {
-    $lang_case = "WHEN LOWER(node_field_data.title) LIKE " . $connection->quote('%[' . $lang . ']%') . " THEN 4";
+    $lang_case = "WHEN LOWER(node_field_data.title) LIKE " . $connection->quote('%[' . $lang . ']%') . " THEN 2";
   }
 
   // NUMBER BOOST
   $number_case = '';
   if (!empty($optional_words)) {
-    $number_case = "WHEN $title_clean LIKE '%" . $optional_words[0] . "%' THEN 6";
+    $number_case = "WHEN $title_clean LIKE '%" . $optional_words[0] . "%' THEN 4";
   }
 
-  // ALL WORDS BOOST
-  $all_words_case = '';
-  if (count($main_words) >= 2) {
-    $all_parts = [];
-    foreach ($main_words as $w) {
-      $w_clean = str_replace([' ', '-', ':', '[', ']', '.'], '', $w);
-      $all_parts[] = "$title_clean LIKE '%" . $connection->escapeLike($w_clean) . "%'";
-    }
-    $all_words_case = "WHEN " . implode(' AND ', $all_parts) . " THEN 2";
-  }
-
-  // FINAL CASE
+  // ✅ FINAL RANKING
   $case = "
     CASE
 
-      -- 🥇 EXACT FULL PHRASE
-      WHEN $title_clean = $case_full_exact THEN 0
+      -- 🥇 EXACT MATCH
+      WHEN $title_clean = $case_exact THEN 0
 
-      -- 🥇 PHRASE CONTAINS
-      WHEN $title_clean LIKE " . $connection->quote('%' . $full_keyword_clean . '%') . " THEN 1
+      -- 🥈 STARTS WITH
+      WHEN $title_clean LIKE $case_start THEN 1
 
-      -- 🥈 ALL WORDS MATCH
-      $all_words_case
-
-      -- 🥉 EXACT MATCH
-      WHEN $title_clean = $case_exact THEN 3
-
-      -- STARTS WITH
-      WHEN $title_clean LIKE $case_start THEN 4
-
-      -- LANGUAGE BOOST
+      -- 🥉 LANGUAGE BOOST
       $lang_case
 
-      -- PARTIAL
-      WHEN $title_clean LIKE $case_full THEN 7
+      -- ⭐ PARTIAL MATCH
+      WHEN $title_clean LIKE $case_full THEN 3
 
-      -- NUMBER BOOST
+      -- ⭐ NUMBER BOOST
       $number_case
 
-      -- TYPO
-      WHEN SOUNDEX($title_clean) = SOUNDEX(" . $connection->quote($keyword_clean) . ") THEN 8
+      -- ⭐ TYPO MATCH
+      WHEN SOUNDEX($title_clean) = SOUNDEX(" . $connection->quote($keyword_clean) . ") THEN 5
 
       ELSE 10
     END
   ";
 
+  // ✅ APPLY SORT
   $query->addOrderBy(NULL, $case, 'ASC', 'search_rank');
 
+  // OPTIONAL: newest first
+  // $query->addOrderBy('node_field_data', 'created', 'DESC');
 }
+
 /////////////////////////////
 
 
@@ -448,4 +436,3 @@ if (
 
 
 }
-
