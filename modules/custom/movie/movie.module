@@ -257,7 +257,7 @@ if (
   // Clean keyword
   $keyword = preg_replace('/[^\p{L}\p{N}\s\.]+/u', '', $keyword);
   $keyword = strtolower(trim(urldecode($keyword)));
-  $keyword = str_replace('and','&',$keyword);
+  $keyword = str_replace('and ','&',$keyword);
 
   if ($keyword === '') return;
 
