@@ -265,8 +265,7 @@ if (
 
   // ✅ STOP WORDS (IMPORTANT FIX)
   $stop_words = [
-    'movie','full','hd','film','part','season','episode',
-    'in','of','a','an','on','at','for','to','by','with'
+    'movie','full','hd','film','part','season','episode'
   ];
 
   // ✅ LANGUAGE LIST
